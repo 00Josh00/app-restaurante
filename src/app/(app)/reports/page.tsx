@@ -48,7 +48,7 @@ export default async function ReportsPage() {
         <div className="card p-5">
           <p className="text-sm text-cream-500">Ventas de hoy</p>
           <p className="font-display mt-1 text-4xl font-semibold tabular-nums text-ember-400">
-            ${Number(r.today.revenue).toFixed(2)}
+            S/{Number(r.today.revenue).toFixed(2)}
           </p>
         </div>
         <div className="card p-5">
@@ -72,7 +72,7 @@ export default async function ReportsPage() {
                 <span className="text-cream-500">
                   {data.count} órdenes ·{' '}
                   <span className="font-mono font-semibold tabular-nums text-ember-400">
-                    ${Number(data.revenue).toFixed(2)}
+                    S/{Number(data.revenue).toFixed(2)}
                   </span>
                 </span>
               </li>
@@ -94,7 +94,7 @@ export default async function ReportsPage() {
               return (
                 <div key={d.day} className="flex flex-1 flex-col items-center gap-1.5">
                   <span className="font-mono text-xs tabular-nums text-cream-400">
-                    {d.revenue.toFixed(0)}
+                    S/{d.revenue.toFixed(0)}
                   </span>
                   <div
                     className="w-full rounded-t-md bg-gradient-to-t from-ember-600 to-ember-400"
@@ -126,7 +126,7 @@ export default async function ReportsPage() {
                 <span className="text-cream-500">
                   {item.quantity} unid. ·{' '}
                   <span className="font-mono font-semibold tabular-nums text-ember-400">
-                    ${Number(item.revenue).toFixed(2)}
+                    S/{Number(item.revenue).toFixed(2)}
                   </span>
                 </span>
               </li>

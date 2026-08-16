@@ -76,7 +76,7 @@ export default async function MenuPage() {
                             <p className="mt-0.5 text-sm text-cream-500">{item.description}</p>
                           )}
                           <p className="mt-1.5 font-mono text-sm font-semibold tabular-nums text-ember-400">
-                            ${Number(item.price).toFixed(2)}
+                            S/{Number(item.price).toFixed(2)}
                           </p>
                         </div>
                         {isAdmin && (

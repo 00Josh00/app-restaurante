@@ -66,7 +66,7 @@ export default async function OrdersPage() {
                     {STATUS_LABELS[order.status] ?? order.status}
                   </span>
                   <span className="font-mono text-base font-semibold tabular-nums text-ember-400">
-                    ${Number(order.total).toFixed(2)}
+                    S/{Number(order.total).toFixed(2)}
                   </span>
                 </div>
               </div>

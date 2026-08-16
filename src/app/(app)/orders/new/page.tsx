@@ -17,6 +17,8 @@ type Table = { id: string; label: string }
 
 type CartItem = { item: MenuItem; quantity: number }
 
+const DELIVERY_FEE = 5
+
 export default function NewOrderPage() {
   const router = useRouter()
 
@@ -58,11 +60,13 @@ export default function NewOrderPage() {
     }))
   }, [categories, items])
 
-  const total = useMemo(
+  const subtotal = useMemo(
     () =>
       cart.reduce((sum, { item, quantity }) => sum + Number(item.price) * quantity, 0),
     [cart]
   )
+
+  const total = subtotal + (orderType === 'delivery' ? DELIVERY_FEE : 0)
 
   const addToCart = (item: MenuItem) => {
     setCart((prev) => {
@@ -205,7 +209,7 @@ export default function NewOrderPage() {
                                 {item.name}
                               </span>
                               <span className="mt-0.5 block font-mono text-sm tabular-nums text-cream-500 group-hover:text-ember-400">
-                                ${Number(item.price).toFixed(2)}
+                                S/{Number(item.price).toFixed(2)}
                               </span>
                             </span>
                             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500/50 group-hover:bg-ember-500 group-hover:text-ink-950">
@@ -259,18 +263,34 @@ export default function NewOrderPage() {
                         </button>
                       </div>
                       <span className="w-20 text-right font-mono font-medium tabular-nums text-cream-100">
-                        ${(Number(item.price) * quantity).toFixed(2)}
+                        S/{(Number(item.price) * quantity).toFixed(2)}
                       </span>
                     </li>
                   ))}
                 </ul>
               )}
 
-              <div className="mb-4 flex items-center justify-between border-t border-ink-800 pt-3">
-                <span className="text-sm font-medium text-cream-400">Total</span>
-                <span className="font-display text-2xl font-semibold tabular-nums text-ember-400">
-                  ${total.toFixed(2)}
-                </span>
+              <div className="mb-4 space-y-1.5 border-t border-ink-800 pt-3">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-cream-400">Subtotal</span>
+                  <span className="font-mono tabular-nums text-cream-200">
+                    S/{subtotal.toFixed(2)}
+                  </span>
+                </div>
+                {orderType === 'delivery' && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-cream-400">Delivery</span>
+                    <span className="font-mono tabular-nums text-cream-200">
+                      S/{DELIVERY_FEE.toFixed(2)}
+                    </span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between pt-1">
+                  <span className="text-sm font-medium text-cream-100">Total</span>
+                  <span className="font-display text-2xl font-semibold tabular-nums text-ember-400">
+                    S/{total.toFixed(2)}
+                  </span>
+                </div>
               </div>
 
               <input
