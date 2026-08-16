@@ -28,7 +28,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           role={profile?.role ?? 'waiter'}
           fullName={profile?.full_name ?? ''}
         />
-        <main className="mx-auto max-w-6xl p-4 pb-24 sm:p-6 sm:pb-6">{children}</main>
+        <main className="mx-auto max-w-6xl p-3 pb-24 sm:p-6 sm:pb-6">{children}</main>
         <AppBottomNav
           role={profile?.role ?? 'waiter'}
         />

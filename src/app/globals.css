@@ -71,7 +71,7 @@
    escala global para que quepa mejor sin perder legibilidad */
 @media (max-width: 480px) {
   html {
-    font-size: 15px;
+    font-size: 14px;
   }
 }
 

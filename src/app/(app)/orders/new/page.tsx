@@ -131,7 +131,7 @@ export default function NewOrderPage() {
 
   return (
     <div>
-      <div className="mb-4">
+      <div className="mb-3">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ember-500">Sala</p>
         <h1 className="page-title mt-0.5">Nuevo pedido</h1>
       </div>
@@ -152,7 +152,7 @@ export default function NewOrderPage() {
                 <button
                   key={type}
                   onClick={() => setOrderType(type)}
-                  className={`flex items-center justify-center gap-2 rounded-xl border p-3 text-sm font-medium transition ${
+                  className={`flex h-11 items-center justify-center gap-2 rounded-xl border text-sm font-medium transition ${
                     orderType === type
                       ? 'border-ember-500/60 bg-ember-500/10 text-ember-400'
                       : 'border-ink-700 bg-ink-900 text-cream-300 hover:border-ink-600'
