@@ -10,7 +10,6 @@ import {
   ListIcon,
   LogoMark,
   LogoutIcon,
-  UsersIcon,
   UtensilsIcon,
 } from '@/components/ui/icons'
 
@@ -20,13 +19,12 @@ const ROLE_LABELS: Record<string, string> = {
   cook: 'Cocinero',
 }
 
-const LINKS = [
+export const NAV_LINKS = [
   { href: '/orders/new', label: 'Nuevo pedido', roles: ['waiter', 'admin'], Icon: ClipboardIcon },
   { href: '/kitchen', label: 'Cocina', roles: ['cook', 'admin'], Icon: UtensilsIcon },
   { href: '/orders', label: 'Órdenes', roles: ['waiter', 'cook', 'admin'], Icon: ListIcon },
   { href: '/menu', label: 'Menú', roles: ['waiter', 'cook', 'admin'], Icon: BookIcon },
   { href: '/reports', label: 'Reportes', roles: ['admin'], Icon: ChartIcon },
-  { href: '/users', label: 'Usuarios', roles: ['admin'], Icon: UsersIcon },
 ]
 
 export default function AppNav({
@@ -46,7 +44,7 @@ export default function AppNav({
     router.refresh()
   }
 
-  const visibleLinks = LINKS.filter((l) => l.roles.includes(role))
+  const visibleLinks = NAV_LINKS.filter((l) => l.roles.includes(role))
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink-800 bg-ink-950/85 backdrop-blur">
@@ -58,7 +56,7 @@ export default function AppNav({
           </span>
         </Link>
 
-        <nav className="flex items-center gap-1">
+        <nav className="hidden items-center gap-1 sm:flex">
           {visibleLinks.map(({ href, label, Icon }) => {
             const active = pathname.startsWith(href)
             return (

@@ -314,6 +314,30 @@ export default function NewOrderPage() {
           </aside>
         </div>
       )}
+
+      {/* Barra fija móvil: total + enviar */}
+      {cart.length > 0 && (
+        <div
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-700 bg-ink-950/95 px-4 py-3 backdrop-blur sm:hidden"
+          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.75rem)' }}
+        >
+          <div className="mx-auto flex max-w-md items-center gap-3">
+            <div className="flex-1">
+              <p className="text-xs text-cream-500">Total</p>
+              <p className="font-display text-lg font-semibold tabular-nums text-ember-400">
+                S/{total.toFixed(2)}
+              </p>
+            </div>
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="btn-primary flex-1 py-3"
+            >
+              {loading ? 'Enviando…' : 'Enviar a cocina'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

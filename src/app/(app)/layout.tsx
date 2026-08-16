@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import AppNav from '@/components/app-nav'
+import AppBottomNav from '@/components/app-bottom-nav'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -27,7 +28,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           role={profile?.role ?? 'waiter'}
           fullName={profile?.full_name ?? ''}
         />
-        <main className="mx-auto max-w-6xl p-4 pb-20 sm:p-6">{children}</main>
+        <main className="mx-auto max-w-6xl p-4 pb-24 sm:p-6 sm:pb-6">{children}</main>
+        <AppBottomNav
+          role={profile?.role ?? 'waiter'}
+        />
       </div>
     </div>
   )
