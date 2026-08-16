@@ -3,10 +3,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { BikeIcon, MinusIcon, PlusIcon, TableIcon } from '@/components/ui/icons'
+import { BikeIcon, CloseIcon, MinusIcon, PlusIcon, TableIcon } from '@/components/ui/icons'
+import CartPanel from '@/components/orders/cart-panel'
 
 type Category = { id: string; name: string }
-type MenuItem = {
+export type MenuItem = {
   id: string
   category_id: string | null
   name: string
@@ -33,6 +34,7 @@ export default function NewOrderPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [dataError, setDataError] = useState<string | null>(null)
+  const [showSheet, setShowSheet] = useState(false)
 
   useEffect(() => {
     const supabase = createClient()
@@ -184,10 +186,31 @@ export default function NewOrderPage() {
               />
             )}
 
+            {/* Chips de categoría (móvil/tablet) */}
+            <div className="sticky top-14 z-30 -mx-4 mb-4 bg-ink-950/95 px-4 py-2 backdrop-blur lg:hidden">
+              <div className="flex gap-2 overflow-x-auto pb-0.5">
+                {itemsByCategory
+                  .filter(({ items }) => items.length > 0)
+                  .map(({ category }) => (
+                    <button
+                      key={category.id}
+                      onClick={() =>
+                        document
+                          .getElementById(`cat-${category.id}`)
+                          ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                      }
+                      className="shrink-0 whitespace-nowrap rounded-full border border-ink-700 bg-ink-900 px-3 py-1.5 text-sm text-cream-300 transition hover:border-ember-500/50 hover:text-ember-400"
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+              </div>
+            </div>
+
             {/* Menú */}
             <div className="space-y-8">
               {itemsByCategory.map(({ category, items: catItems }) => (
-                <section key={category.id}>
+                <section key={category.id} id={`cat-${category.id}`} className="scroll-mt-28">
                   <div className="mb-3 flex items-center gap-3">
                     <span className="h-px w-8 bg-ember-500/60" />
                     <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-cream-400">
@@ -198,26 +221,64 @@ export default function NewOrderPage() {
                     <p className="text-sm text-cream-500">Sin platillos disponibles.</p>
                   ) : (
                     <ul className="grid gap-2 sm:grid-cols-2">
-                      {catItems.map((item) => (
-                        <li key={item.id}>
-                          <button
-                            onClick={() => addToCart(item)}
-                            className="group flex w-full items-center justify-between gap-3 rounded-xl border border-ink-700 bg-ink-900 p-3 text-left transition hover:border-ember-500/60 hover:bg-ink-800"
-                          >
-                            <span className="min-w-0">
-                              <span className="block truncate text-sm font-medium text-cream-100">
-                                {item.name}
+                      {catItems.map((item) => {
+                        const qty = cart.find((c) => c.item.id === item.id)?.quantity ?? 0
+                        if (qty === 0) {
+                          return (
+                            <li key={item.id}>
+                              <button
+                                onClick={() => addToCart(item)}
+                                className="group flex w-full items-center justify-between gap-3 rounded-xl border border-ink-700 bg-ink-900 p-3 text-left transition active:scale-[0.99] hover:border-ember-500/60 hover:bg-ink-800"
+                              >
+                                <span className="min-w-0">
+                                  <span className="block truncate text-sm font-medium text-cream-100">
+                                    {item.name}
+                                  </span>
+                                  <span className="mt-0.5 block font-mono text-sm tabular-nums text-cream-500 group-hover:text-ember-400">
+                                    S/{Number(item.price).toFixed(2)}
+                                  </span>
+                                </span>
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500/50 group-hover:bg-ember-500 group-hover:text-ink-950">
+                                  <PlusIcon className="h-4 w-4" />
+                                </span>
+                              </button>
+                            </li>
+                          )
+                        }
+                        return (
+                          <li key={item.id}>
+                            <div className="flex w-full items-center justify-between gap-3 rounded-xl border border-ember-500/40 bg-ember-500/[0.06] p-3">
+                              <span className="min-w-0">
+                                <span className="block truncate text-sm font-medium text-cream-100">
+                                  {item.name}
+                                </span>
+                                <span className="mt-0.5 block font-mono text-sm tabular-nums text-ember-400">
+                                  S/{Number(item.price).toFixed(2)}
+                                </span>
                               </span>
-                              <span className="mt-0.5 block font-mono text-sm tabular-nums text-cream-500 group-hover:text-ember-400">
-                                S/{Number(item.price).toFixed(2)}
-                              </span>
-                            </span>
-                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500/50 group-hover:bg-ember-500 group-hover:text-ink-950">
-                              <PlusIcon className="h-4 w-4" />
-                            </span>
-                          </button>
-                        </li>
-                      ))}
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => removeFromCart(item.id)}
+                                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-ink-700 text-cream-300 transition active:scale-95 hover:border-ink-600 hover:text-cream-100"
+                                  aria-label={`Quitar ${item.name}`}
+                                >
+                                  <MinusIcon className="h-4 w-4" />
+                                </button>
+                                <span className="w-6 text-center font-mono text-sm font-semibold text-cream-100">
+                                  {qty}
+                                </span>
+                                <button
+                                  onClick={() => addToCart(item)}
+                                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-ember-500/50 bg-ember-500 text-ink-950 transition active:scale-95 hover:bg-ember-400"
+                                  aria-label={`Agregar ${item.name}`}
+                                >
+                                  <PlusIcon className="h-4 w-4" />
+                                </button>
+                              </div>
+                            </div>
+                          </li>
+                        )
+                      })}
                     </ul>
                   )}
                 </section>
@@ -225,116 +286,88 @@ export default function NewOrderPage() {
             </div>
           </div>
 
-          {/* Carrito */}
-          <aside className="card h-fit overflow-hidden lg:sticky lg:top-24">
+          {/* Carrito (escritorio) */}
+          <aside className="card h-fit overflow-hidden lg:sticky lg:top-24 hidden lg:block">
             <div className="border-b border-ink-800 px-4 py-3">
               <h2 className="font-display text-lg font-semibold tracking-tight text-cream-50">
                 Pedido
               </h2>
             </div>
-
             <div className="p-4">
-              {cart.length === 0 ? (
-                <p className="text-sm text-cream-500">El pedido está vacío.</p>
-              ) : (
-                <ul className="mb-4 space-y-2.5">
-                  {cart.map(({ item, quantity }) => (
-                    <li key={item.id} className="flex items-center gap-2 text-sm">
-                      <span className="min-w-0 flex-1 truncate text-cream-200">
-                        {item.name}
-                      </span>
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          onClick={() => removeFromCart(item.id)}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-ink-700 text-cream-400 transition hover:border-ink-600 hover:text-cream-100"
-                          aria-label={`Quitar ${item.name}`}
-                        >
-                          <MinusIcon className="h-3.5 w-3.5" />
-                        </button>
-                        <span className="w-5 text-center font-mono text-cream-100">
-                          {quantity}
-                        </span>
-                        <button
-                          onClick={() => addToCart(item)}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-ink-700 text-cream-400 transition hover:border-ember-500/60 hover:text-ember-400"
-                          aria-label={`Agregar ${item.name}`}
-                        >
-                          <PlusIcon className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                      <span className="w-20 text-right font-mono font-medium tabular-nums text-cream-100">
-                        S/{(Number(item.price) * quantity).toFixed(2)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              <div className="mb-4 space-y-1.5 border-t border-ink-800 pt-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-cream-400">Subtotal</span>
-                  <span className="font-mono tabular-nums text-cream-200">
-                    S/{subtotal.toFixed(2)}
-                  </span>
-                </div>
-                {orderType === 'delivery' && (
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-cream-400">Delivery</span>
-                    <span className="font-mono tabular-nums text-cream-200">
-                      S/{DELIVERY_FEE.toFixed(2)}
-                    </span>
-                  </div>
-                )}
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-sm font-medium text-cream-100">Total</span>
-                  <span className="font-display text-2xl font-semibold tabular-nums text-ember-400">
-                    S/{total.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-
-              <input
-                type="text"
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Nota (opcional)"
-                className="input mb-4"
+              <CartPanel
+                cart={cart}
+                onAdd={addToCart}
+                onRemove={removeFromCart}
+                note={note}
+                onNoteChange={setNote}
+                error={error}
+                loading={loading}
+                onSubmit={handleSubmit}
+                total={total}
+                subtotal={subtotal}
+                orderType={orderType}
+                deliveryFee={DELIVERY_FEE}
               />
-
-              {error && <p className="mb-3 text-sm text-rose-400">{error}</p>}
-
-              <button
-                onClick={handleSubmit}
-                disabled={loading || cart.length === 0}
-                className="btn-primary w-full py-2.5"
-              >
-                {loading ? 'Enviando…' : 'Enviar a cocina'}
-              </button>
             </div>
           </aside>
         </div>
       )}
 
-      {/* Barra fija móvil: total + enviar */}
-      {cart.length > 0 && (
-        <div
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-700 bg-ink-950/95 px-4 py-3 backdrop-blur sm:hidden"
-          style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.75rem)' }}
+      {/* Barra inferior móvil: ver pedido */}
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-700 bg-ink-950/95 px-4 py-3 backdrop-blur lg:hidden"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.75rem)' }}
+      >
+        <button
+          onClick={() => setShowSheet(true)}
+          className="mx-auto flex w-full max-w-md items-center justify-between rounded-xl btn-primary px-4 py-3"
         >
-          <div className="mx-auto flex max-w-md items-center gap-3">
-            <div className="flex-1">
-              <p className="text-xs text-cream-500">Total</p>
-              <p className="font-display text-lg font-semibold tabular-nums text-ember-400">
-                S/{total.toFixed(2)}
-              </p>
+          <span className="text-sm font-semibold">
+            Ver pedido · {cart.length} {cart.length === 1 ? 'plato' : 'platos'}
+          </span>
+          <span className="font-display text-lg font-semibold tabular-nums">S/{total.toFixed(2)}</span>
+        </button>
+      </div>
+
+      {/* Sheet móvil del pedido */}
+      {showSheet && (
+        <div className="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true">
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => setShowSheet(false)}
+          />
+          <div
+            className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-3xl border-t border-ink-700 bg-ink-900 shadow-2xl shadow-black/50"
+            style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+          >
+            <div className="sticky top-0 flex items-center justify-between border-b border-ink-800 bg-ink-900 px-4 py-3">
+              <h2 className="font-display text-lg font-semibold tracking-tight text-cream-50">
+                Pedido
+              </h2>
+              <button
+                onClick={() => setShowSheet(false)}
+                className="rounded-lg p-1.5 text-cream-500 transition hover:bg-ink-800 hover:text-cream-200"
+                aria-label="Cerrar"
+              >
+                <CloseIcon className="h-5 w-5" />
+              </button>
             </div>
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className="btn-primary flex-1 py-3"
-            >
-              {loading ? 'Enviando…' : 'Enviar a cocina'}
-            </button>
+            <div className="p-4">
+              <CartPanel
+                cart={cart}
+                onAdd={addToCart}
+                onRemove={removeFromCart}
+                note={note}
+                onNoteChange={setNote}
+                error={error}
+                loading={loading}
+                onSubmit={handleSubmit}
+                total={total}
+                subtotal={subtotal}
+                orderType={orderType}
+                deliveryFee={DELIVERY_FEE}
+              />
+            </div>
           </div>
         </div>
       )}
