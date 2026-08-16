@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { CloseIcon } from '@/components/ui/icons'
 
 export default function Modal({
   open,
@@ -26,21 +27,23 @@ export default function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-6"
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-t-2xl bg-white p-6 shadow-xl sm:rounded-2xl"
+        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-t-3xl border border-ink-700 bg-ink-900 p-6 shadow-2xl shadow-black/50 sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mb-4 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-zinc-900">{title}</h3>
+        <div className="mb-5 flex items-center justify-between">
+          <h3 className="font-display text-xl font-semibold tracking-tight text-cream-50">
+            {title}
+          </h3>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-zinc-500 hover:bg-zinc-100"
+            className="rounded-lg p-1.5 text-cream-500 transition hover:bg-ink-800 hover:text-cream-200"
             aria-label="Cerrar"
           >
-            ✕
+            <CloseIcon className="h-5 w-5" />
           </button>
         </div>
         {children}

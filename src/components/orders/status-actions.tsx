@@ -25,7 +25,7 @@ export default function StatusActions({ orderId, status }: { orderId: string; st
   return (
     <button
       onClick={handle}
-      className="rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white transition hover:bg-zinc-700"
+      className={next.to === 'cobrado' ? 'btn-primary px-3 py-1.5' : 'btn-emerald px-3 py-1.5'}
     >
       {next.label}
     </button>

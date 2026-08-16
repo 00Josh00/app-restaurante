@@ -2,14 +2,14 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Restaurante App",
-    short_name: "Restaurante",
+    name: "Kleta · Restaurante",
+    short_name: "Kleta",
     description: "Gestión de pedidos del restaurante",
     start_url: "/",
     display: "standalone",
     orientation: "portrait",
-    background_color: "#fafafa",
-    theme_color: "#18181b",
+    background_color: "#0b0908",
+    theme_color: "#0b0908",
     icons: [
       {
         src: "/icons/icon-192.png",

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { BikeIcon, MinusIcon, PlusIcon, TableIcon } from '@/components/ui/icons'
 
 type Category = { id: string; name: string }
 type MenuItem = {
@@ -124,26 +125,35 @@ export default function NewOrderPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-zinc-900">Nuevo pedido</h1>
+      <div className="mb-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ember-500">Sala</p>
+        <h1 className="page-title mt-1">Nuevo pedido</h1>
+      </div>
 
       {dataError ? (
-        <p className="text-red-600">{dataError}</p>
+        <p className="text-rose-400">{dataError}</p>
       ) : (
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
           <div>
             {/* Tipo de pedido */}
             <div className="mb-4 grid grid-cols-2 gap-2">
-              {(['mesa', 'delivery'] as const).map((type) => (
+              {(
+                [
+                  { type: 'mesa', label: 'En mesa', Icon: TableIcon },
+                  { type: 'delivery', label: 'Delivery', Icon: BikeIcon },
+                ] as const
+              ).map(({ type, label, Icon }) => (
                 <button
                   key={type}
                   onClick={() => setOrderType(type)}
-                  className={`rounded-xl border p-3 text-sm font-medium transition ${
+                  className={`flex items-center justify-center gap-2 rounded-xl border p-3 text-sm font-medium transition ${
                     orderType === type
-                      ? 'border-zinc-900 bg-zinc-900 text-white'
-                      : 'border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-100'
+                      ? 'border-ember-500/60 bg-ember-500/10 text-ember-400'
+                      : 'border-ink-700 bg-ink-900 text-cream-300 hover:border-ink-600'
                   }`}
                 >
-                  {type === 'mesa' ? '🪑 En mesa' : '🛵 Delivery'}
+                  <Icon className="h-4 w-4" />
+                  {label}
                 </button>
               ))}
             </div>
@@ -152,7 +162,7 @@ export default function NewOrderPage() {
               <select
                 value={tableId}
                 onChange={(e) => setTableId(e.target.value)}
-                className="mb-6 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm outline-none focus:border-zinc-900"
+                className="input mb-6"
               >
                 {tables.map((t) => (
                   <option key={t.id} value={t.id}>
@@ -166,34 +176,41 @@ export default function NewOrderPage() {
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="Nombre del cliente"
-                className="mb-6 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-900"
+                className="input mb-6"
               />
             )}
 
             {/* Menú */}
-            <div className="space-y-6">
+            <div className="space-y-8">
               {itemsByCategory.map(({ category, items: catItems }) => (
                 <section key={category.id}>
-                  <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-                    {category.name}
-                  </h2>
+                  <div className="mb-3 flex items-center gap-3">
+                    <span className="h-px w-8 bg-ember-500/60" />
+                    <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-cream-400">
+                      {category.name}
+                    </h2>
+                  </div>
                   {catItems.length === 0 ? (
-                    <p className="text-sm text-zinc-400">Sin platillos disponibles.</p>
+                    <p className="text-sm text-cream-500">Sin platillos disponibles.</p>
                   ) : (
                     <ul className="grid gap-2 sm:grid-cols-2">
                       {catItems.map((item) => (
                         <li key={item.id}>
                           <button
                             onClick={() => addToCart(item)}
-                            className="flex w-full items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white p-3 text-left transition hover:border-zinc-900"
+                            className="group flex w-full items-center justify-between gap-3 rounded-xl border border-ink-700 bg-ink-900 p-3 text-left transition hover:border-ember-500/60 hover:bg-ink-800"
                           >
-                            <div>
-                              <p className="text-sm font-medium text-zinc-900">{item.name}</p>
-                              <p className="text-sm text-zinc-500">
+                            <span className="min-w-0">
+                              <span className="block truncate text-sm font-medium text-cream-100">
+                                {item.name}
+                              </span>
+                              <span className="mt-0.5 block font-mono text-sm tabular-nums text-cream-500 group-hover:text-ember-400">
                                 ${Number(item.price).toFixed(2)}
-                              </p>
-                            </div>
-                            <span className="rounded-lg bg-zinc-100 px-2 py-1 text-sm">+</span>
+                              </span>
+                            </span>
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500/50 group-hover:bg-ember-500 group-hover:text-ink-950">
+                              <PlusIcon className="h-4 w-4" />
+                            </span>
                           </button>
                         </li>
                       ))}
@@ -205,61 +222,75 @@ export default function NewOrderPage() {
           </div>
 
           {/* Carrito */}
-          <aside className="h-fit rounded-2xl border border-zinc-200 bg-white p-4 lg:sticky lg:top-4">
-            <h2 className="mb-3 font-semibold text-zinc-900">Pedido</h2>
-
-            {cart.length === 0 ? (
-              <p className="text-sm text-zinc-500">El pedido está vacío.</p>
-            ) : (
-              <ul className="mb-4 space-y-2">
-                {cart.map(({ item, quantity }) => (
-                  <li key={item.id} className="flex items-center justify-between gap-2 text-sm">
-                    <span className="min-w-0 flex-1 truncate text-zinc-800">{item.name}</span>
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="rounded bg-zinc-100 px-2 text-zinc-600 hover:bg-zinc-200"
-                    >
-                      −
-                    </button>
-                    <span className="w-6 text-center">{quantity}</span>
-                    <button
-                      onClick={() => addToCart(item)}
-                      className="rounded bg-zinc-100 px-2 text-zinc-600 hover:bg-zinc-200"
-                    >
-                      +
-                    </button>
-                    <span className="w-20 text-right font-medium text-zinc-900">
-                      ${(Number(item.price) * quantity).toFixed(2)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <div className="mb-4 flex items-center justify-between border-t border-zinc-200 pt-3">
-              <span className="font-medium text-zinc-700">Total</span>
-              <span className="text-lg font-semibold text-zinc-900">
-                ${total.toFixed(2)}
-              </span>
+          <aside className="card h-fit overflow-hidden lg:sticky lg:top-24">
+            <div className="border-b border-ink-800 px-4 py-3">
+              <h2 className="font-display text-lg font-semibold tracking-tight text-cream-50">
+                Pedido
+              </h2>
             </div>
 
-            <input
-              type="text"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="Nota (opcional)"
-              className="mb-4 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-900"
-            />
+            <div className="p-4">
+              {cart.length === 0 ? (
+                <p className="text-sm text-cream-500">El pedido está vacío.</p>
+              ) : (
+                <ul className="mb-4 space-y-2.5">
+                  {cart.map(({ item, quantity }) => (
+                    <li key={item.id} className="flex items-center gap-2 text-sm">
+                      <span className="min-w-0 flex-1 truncate text-cream-200">
+                        {item.name}
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-ink-700 text-cream-400 transition hover:border-ink-600 hover:text-cream-100"
+                          aria-label={`Quitar ${item.name}`}
+                        >
+                          <MinusIcon className="h-3.5 w-3.5" />
+                        </button>
+                        <span className="w-5 text-center font-mono text-cream-100">
+                          {quantity}
+                        </span>
+                        <button
+                          onClick={() => addToCart(item)}
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-ink-700 text-cream-400 transition hover:border-ember-500/60 hover:text-ember-400"
+                          aria-label={`Agregar ${item.name}`}
+                        >
+                          <PlusIcon className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                      <span className="w-20 text-right font-mono font-medium tabular-nums text-cream-100">
+                        ${(Number(item.price) * quantity).toFixed(2)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
 
-            {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
+              <div className="mb-4 flex items-center justify-between border-t border-ink-800 pt-3">
+                <span className="text-sm font-medium text-cream-400">Total</span>
+                <span className="font-display text-2xl font-semibold tabular-nums text-ember-400">
+                  ${total.toFixed(2)}
+                </span>
+              </div>
 
-            <button
-              onClick={handleSubmit}
-              disabled={loading || cart.length === 0}
-              className="w-full rounded-lg bg-zinc-900 py-2.5 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:opacity-50"
-            >
-              {loading ? 'Enviando…' : 'Enviar a cocina'}
-            </button>
+              <input
+                type="text"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Nota (opcional)"
+                className="input mb-4"
+              />
+
+              {error && <p className="mb-3 text-sm text-rose-400">{error}</p>}
+
+              <button
+                onClick={handleSubmit}
+                disabled={loading || cart.length === 0}
+                className="btn-primary w-full py-2.5"
+              >
+                {loading ? 'Enviando…' : 'Enviar a cocina'}
+              </button>
+            </div>
           </aside>
         </div>
       )}

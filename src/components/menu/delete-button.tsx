@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { TrashIcon } from '@/components/ui/icons'
 
 export default function DeleteButton({
   table,
@@ -33,9 +34,10 @@ export default function DeleteButton({
     <button
       onClick={handleDelete}
       disabled={loading}
-      className="rounded-lg border border-red-200 px-2 py-1.5 text-sm text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+      className="btn-danger px-2.5 py-1.5"
+      title={label}
     >
-      {label}
+      <TrashIcon className="h-4 w-4" />
     </button>
   )
 }

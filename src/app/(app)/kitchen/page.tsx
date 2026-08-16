@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { RealtimeChannel } from '@supabase/supabase-js'
+import { BellIcon, CheckIcon, UtensilsIcon } from '@/components/ui/icons'
 
 type OrderItem = { id: string; name: string; quantity: number }
 type Order = {
@@ -25,12 +26,20 @@ const STATUS_LABELS: Record<Order['status'], string> = {
   cobrado: 'Cobrado',
 }
 
-const STATUS_STYLES: Record<Order['status'], string> = {
-  pendiente: 'border-red-300 bg-red-50',
-  en_cocina: 'border-amber-300 bg-amber-50',
-  listo: 'border-green-300 bg-green-50',
-  entregado: 'border-zinc-200 bg-white',
-  cobrado: 'border-zinc-200 bg-white',
+const STATUS_ACCENT: Record<Order['status'], string> = {
+  pendiente: 'bg-rose-500',
+  en_cocina: 'bg-ember-500',
+  listo: 'bg-emerald-500',
+  entregado: 'bg-ink-600',
+  cobrado: 'bg-ink-600',
+}
+
+const STATUS_BADGE: Record<Order['status'], string> = {
+  pendiente: 'badge-rose',
+  en_cocina: 'badge-amber',
+  listo: 'badge-emerald',
+  entregado: 'badge-neutral',
+  cobrado: 'badge-neutral',
 }
 
 function playBeep() {
@@ -117,7 +126,6 @@ export default function KitchenPage() {
           if (payload.eventType === 'UPDATE' && changed) {
             setOrders((prev) => {
               if (changed.status === 'listo' || changed.status === 'entregado') {
-                // mantener visibles los listos; los entregados desaparecen
                 if (changed.status === 'entregado') {
                   return prev.filter((o) => o.id !== changed.id)
                 }
@@ -153,12 +161,29 @@ export default function KitchenPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold text-zinc-900">Cocina</h1>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-ember-500">
+            <UtensilsIcon className="h-4 w-4" /> Cocina
+          </p>
+          <h1 className="page-title mt-1">Órdenes en vivo</h1>
+        </div>
+        <span className="badge-amber">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-ember-500" />
+          </span>
+          En vivo
+        </span>
+      </div>
 
       {loading ? (
-        <p className="text-zinc-500">Cargando…</p>
+        <p className="text-cream-500">Cargando…</p>
       ) : orders.length === 0 ? (
-        <p className="text-zinc-500">No hay pedidos.</p>
+        <div className="card flex flex-col items-center gap-3 p-12 text-center">
+          <BellIcon className="h-10 w-10 text-cream-500" />
+          <p className="text-cream-400">No hay pedidos esperando.</p>
+        </div>
       ) : (
         <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {orders.map((order) => {
@@ -166,66 +191,74 @@ export default function KitchenPage() {
             return (
               <li
                 key={order.id}
-                className={`rounded-2xl border-2 p-4 ${STATUS_STYLES[order.status]} ${
-                  isNew ? 'animate-pulse' : ''
-                }`}
+                className={`card overflow-hidden ${isNew ? 'ring-2 ring-ember-500/40 animate-pulse' : ''}`}
               >
-                <div className="mb-2 flex items-start justify-between gap-2">
-                  <div>
-                    <p className="font-semibold text-zinc-900">{orderLabel(order)}</p>
-                    <p className="text-xs text-zinc-500">
-                      {new Date(order.created_at).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </p>
+                <div className={`h-1 w-full ${STATUS_ACCENT[order.status]}`} />
+                <div className="p-4">
+                  <div className="mb-3 flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-display text-lg font-semibold text-cream-50">
+                        {orderLabel(order)}
+                      </p>
+                      <p className="text-xs text-cream-500">
+                        {new Date(order.created_at).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </p>
+                    </div>
+                    <span className={STATUS_BADGE[order.status]}>
+                      {STATUS_LABELS[order.status]}
+                    </span>
                   </div>
-                  <span className="rounded-full bg-white px-2 py-1 text-xs font-medium text-zinc-700">
-                    {STATUS_LABELS[order.status]}
-                  </span>
-                </div>
 
-                <ul className="mb-3 space-y-1">
-                  {order.order_items?.map((item) => (
-                    <li key={item.id} className="flex justify-between text-sm text-zinc-800">
-                      <span>
-                        {item.quantity} × {item.name}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                  <ul className="mb-3 space-y-1.5">
+                    {order.order_items?.map((item) => (
+                      <li
+                        key={item.id}
+                        className="flex items-baseline justify-between gap-2 text-sm text-cream-200"
+                      >
+                        <span className="min-w-0 flex-1 truncate">{item.name}</span>
+                        <span className="font-mono text-xs tabular-nums text-cream-500">
+                          ×{item.quantity}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
 
-                {order.note && (
-                  <p className="mb-3 rounded-lg bg-yellow-100 px-2 py-1 text-xs text-yellow-800">
-                    📝 {order.note}
-                  </p>
-                )}
+                  {order.note && (
+                    <p className="mb-3 rounded-lg border border-ember-500/30 bg-ember-500/10 px-2.5 py-1.5 text-xs text-ember-300">
+                      {order.note}
+                    </p>
+                  )}
 
-                <div className="flex gap-2">
-                  {order.status === 'pendiente' && (
-                    <button
-                      onClick={() => updateStatus(order.id, 'en_cocina')}
-                      className="flex-1 rounded-lg bg-amber-600 py-2 text-sm font-medium text-white transition hover:bg-amber-500"
-                    >
-                      Empezar
-                    </button>
-                  )}
-                  {order.status === 'en_cocina' && (
-                    <button
-                      onClick={() => updateStatus(order.id, 'listo')}
-                      className="flex-1 rounded-lg bg-green-600 py-2 text-sm font-medium text-white transition hover:bg-green-500"
-                    >
-                      Listo
-                    </button>
-                  )}
-                  {order.status === 'listo' && (
-                    <button
-                      onClick={() => updateStatus(order.id, 'entregado')}
-                      className="flex-1 rounded-lg bg-zinc-600 py-2 text-sm font-medium text-white transition hover:bg-zinc-500"
-                    >
-                      Entregado
-                    </button>
-                  )}
+                  <div className="flex gap-2">
+                    {order.status === 'pendiente' && (
+                      <button
+                        onClick={() => updateStatus(order.id, 'en_cocina')}
+                        className="btn-primary flex-1 py-2.5"
+                      >
+                        Empezar
+                      </button>
+                    )}
+                    {order.status === 'en_cocina' && (
+                      <button
+                        onClick={() => updateStatus(order.id, 'listo')}
+                        className="btn-emerald flex-1 py-2.5"
+                      >
+                        <CheckIcon className="h-4 w-4" />
+                        Listo
+                      </button>
+                    )}
+                    {order.status === 'listo' && (
+                      <button
+                        onClick={() => updateStatus(order.id, 'entregado')}
+                        className="btn-ghost flex-1 py-2.5"
+                      >
+                        Entregado
+                      </button>
+                    )}
+                  </div>
                 </div>
               </li>
             )

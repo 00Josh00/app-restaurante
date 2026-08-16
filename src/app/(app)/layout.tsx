@@ -20,13 +20,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     .single()
 
   return (
-    <div className="min-h-screen bg-zinc-50">
-      <AppNav
-        role={profile?.role ?? 'waiter'}
-        fullName={profile?.full_name ?? ''}
-        email={user.email ?? ''}
-      />
-      <main className="mx-auto max-w-5xl p-6 pb-16">{children}</main>
+    <div className="relative min-h-screen bg-ink-950">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(70%_45%_at_50%_-10%,rgba(245,158,11,0.07),transparent)]" />
+      <div className="relative">
+        <AppNav
+          role={profile?.role ?? 'waiter'}
+          fullName={profile?.full_name ?? ''}
+        />
+        <main className="mx-auto max-w-6xl p-4 pb-20 sm:p-6">{children}</main>
+      </div>
     </div>
   )
 }

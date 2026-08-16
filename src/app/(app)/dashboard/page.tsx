@@ -1,5 +1,12 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import {
+  BookIcon,
+  ChartIcon,
+  ClipboardIcon,
+  ListIcon,
+  UtensilsIcon,
+} from '@/components/ui/icons'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,43 +31,52 @@ export default async function DashboardPage() {
 
   const role = profile?.role ?? 'waiter'
 
-  const links: Record<string, { href: string; label: string; desc: string }[]> = {
+  const links: Record<string, { href: string; label: string; desc: string; Icon: typeof ListIcon }[]> = {
     waiter: [
-      { href: '/orders/new', label: 'Nuevo pedido', desc: 'Tomar un pedido de mesa o delivery' },
-      { href: '/orders', label: 'Órdenes', desc: 'Ver órdenes y cobrar' },
-      { href: '/menu', label: 'Menú', desc: 'Consultar los platillos' },
+      { href: '/orders/new', label: 'Nuevo pedido', desc: 'Tomar un pedido de mesa o delivery', Icon: ClipboardIcon },
+      { href: '/orders', label: 'Órdenes', desc: 'Ver órdenes y cobrar', Icon: ListIcon },
+      { href: '/menu', label: 'Menú', desc: 'Consultar los platillos', Icon: BookIcon },
     ],
     cook: [
-      { href: '/kitchen', label: 'Cocina', desc: 'Recibir y preparar pedidos en tiempo real' },
-      { href: '/orders', label: 'Órdenes', desc: 'Historial de órdenes' },
-      { href: '/menu', label: 'Menú', desc: 'Consultar los platillos' },
+      { href: '/kitchen', label: 'Cocina', desc: 'Recibir y preparar pedidos en tiempo real', Icon: UtensilsIcon },
+      { href: '/orders', label: 'Órdenes', desc: 'Historial de órdenes', Icon: ListIcon },
+      { href: '/menu', label: 'Menú', desc: 'Consultar los platillos', Icon: BookIcon },
     ],
     admin: [
-      { href: '/orders/new', label: 'Nuevo pedido', desc: 'Tomar un pedido de mesa o delivery' },
-      { href: '/kitchen', label: 'Cocina', desc: 'Recibir y preparar pedidos' },
-      { href: '/orders', label: 'Órdenes', desc: 'Ver órdenes y cobrar' },
-      { href: '/menu', label: 'Menú', desc: 'Administrar categorías y platillos' },
+      { href: '/orders/new', label: 'Nuevo pedido', desc: 'Tomar un pedido de mesa o delivery', Icon: ClipboardIcon },
+      { href: '/kitchen', label: 'Cocina', desc: 'Recibir y preparar pedidos', Icon: UtensilsIcon },
+      { href: '/orders', label: 'Órdenes', desc: 'Ver órdenes y cobrar', Icon: ListIcon },
+      { href: '/menu', label: 'Menú', desc: 'Administrar categorías y platillos', Icon: BookIcon },
+      { href: '/reports', label: 'Reportes', desc: 'Métricas y ventas del día', Icon: ChartIcon },
     ],
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold text-zinc-900">
-        {profile?.full_name ? `Hola, ${profile.full_name}` : 'Dashboard'}
-      </h1>
-      <p className="mt-1 text-zinc-500">
-        Rol: <span className="font-medium text-zinc-700">{ROLE_LABELS[role]}</span>
+    <div className="mx-auto max-w-3xl">
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ember-500">
+        {ROLE_LABELS[role]}
       </p>
+      <h1 className="page-title mt-1">
+        {profile?.full_name ? `Hola, ${profile.full_name}` : 'Bienvenido'}
+      </h1>
+      <p className="mt-1 text-cream-500">¿Qué haremos hoy?</p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        {(links[role] ?? []).map((link) => (
+        {(links[role] ?? []).map(({ href, label, desc, Icon }) => (
           <Link
-            key={link.href}
-            href={link.href}
-            className="rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-zinc-900"
+            key={href}
+            href={href}
+            className="group card flex items-start gap-4 p-5 transition hover:border-ember-500/60 hover:bg-ink-800"
           >
-            <p className="font-semibold text-zinc-900">{link.label}</p>
-            <p className="mt-1 text-sm text-zinc-500">{link.desc}</p>
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500/50 group-hover:bg-ember-500/10">
+              <Icon className="h-5 w-5" />
+            </span>
+            <span>
+              <span className="font-display block text-lg font-semibold text-cream-50">
+                {label}
+              </span>
+              <span className="mt-0.5 block text-sm text-cream-500">{desc}</span>
+            </span>
           </Link>
         ))}
       </div>

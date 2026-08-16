@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { LogoMark } from '@/components/ui/icons'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -30,14 +31,23 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-50 p-6">
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-ink-950 p-6">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_45%_at_50%_-10%,rgba(245,158,11,0.12),transparent)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(45%_35%_at_80%_110%,rgba(245,158,11,0.06),transparent)]" />
+
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm"
+        className="relative w-full max-w-sm rounded-3xl border border-ink-700 bg-ink-900/90 p-8 shadow-2xl shadow-black/50 backdrop-blur"
       >
-        <h1 className="mb-6 text-2xl font-semibold text-zinc-900">Iniciar sesión</h1>
+        <div className="mb-8 flex flex-col items-center text-center">
+          <LogoMark className="h-12 w-12 text-ember-500" />
+          <h1 className="font-display mt-4 text-3xl font-semibold tracking-tight text-cream-50">
+            Kleta
+          </h1>
+          <p className="mt-1 text-sm text-cream-500">Inicia sesión para operar</p>
+        </div>
 
-        <label className="mb-1 block text-sm font-medium text-zinc-700" htmlFor="email">
+        <label className="label" htmlFor="email">
           Email
         </label>
         <input
@@ -46,11 +56,12 @@ export default function LoginPage() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mb-4 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-900"
-          placeholder="correo@restaurante.com"
+          className="input mb-4"
+          placeholder="correo@kleta.com"
+          autoComplete="email"
         />
 
-        <label className="mb-1 block text-sm font-medium text-zinc-700" htmlFor="password">
+        <label className="label" htmlFor="password">
           Contraseña
         </label>
         <input
@@ -59,16 +70,21 @@ export default function LoginPage() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mb-4 w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-900"
+          className="input mb-4"
           placeholder="••••••••"
+          autoComplete="current-password"
         />
 
-        {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
+        {error && (
+          <p className="mb-4 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-400">
+            {error}
+          </p>
+        )}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-zinc-900 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:opacity-50"
+          className="btn-primary w-full py-2.5 text-base"
         >
           {loading ? 'Ingresando…' : 'Ingresar'}
         </button>

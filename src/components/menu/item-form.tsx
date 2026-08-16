@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Modal from '@/components/ui/modal'
+import { PencilIcon, PlusIcon } from '@/components/ui/icons'
 
 type Item = {
   id: string
@@ -65,9 +66,19 @@ export default function ItemForm({ categoryId, item }: { categoryId: string; ite
     <>
       <button
         onClick={() => setOpen(true)}
-        className="rounded-lg bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-zinc-700"
+        className={item ? 'btn-ghost px-3 py-1.5' : 'btn-primary'}
       >
-        {item ? 'Editar' : 'Agregar platillo'}
+        {item ? (
+          <>
+            <PencilIcon className="h-4 w-4" />
+            Editar
+          </>
+        ) : (
+          <>
+            <PlusIcon className="h-4 w-4" />
+            Agregar platillo
+          </>
+        )}
       </button>
 
       <Modal
@@ -77,7 +88,7 @@ export default function ItemForm({ categoryId, item }: { categoryId: string; ite
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700" htmlFor="item-name">
+            <label className="label" htmlFor="item-name">
               Nombre
             </label>
             <input
@@ -86,12 +97,13 @@ export default function ItemForm({ categoryId, item }: { categoryId: string; ite
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-900"
+              className="input"
+              autoFocus
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700" htmlFor="item-desc">
+            <label className="label" htmlFor="item-desc">
               Descripción
             </label>
             <textarea
@@ -99,12 +111,12 @@ export default function ItemForm({ categoryId, item }: { categoryId: string; ite
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-900"
+              className="input resize-none"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-sm font-medium text-zinc-700" htmlFor="item-price">
+            <label className="label" htmlFor="item-price">
               Precio
             </label>
             <input
@@ -115,28 +127,24 @@ export default function ItemForm({ categoryId, item }: { categoryId: string; ite
               required
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              className="w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-zinc-900"
+              className="input"
               placeholder="0.00"
             />
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-zinc-700">
+          <label className="flex cursor-pointer items-center gap-2.5 text-sm text-cream-200">
             <input
               type="checkbox"
               checked={available}
               onChange={(e) => setAvailable(e.target.checked)}
-              className="h-4 w-4"
+              className="h-4 w-4 accent-ember-500"
             />
             Disponible
           </label>
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-rose-400">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-zinc-900 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:opacity-50"
-          >
+          <button type="submit" disabled={loading} className="btn-primary w-full">
             {loading ? 'Guardando…' : 'Guardar'}
           </button>
         </form>
