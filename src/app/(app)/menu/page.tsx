@@ -57,7 +57,7 @@ export default async function MenuPage() {
                 {categoryItems.length === 0 ? (
                   <p className="text-sm text-cream-500">Sin platillos.</p>
                 ) : (
-                  <ul className="grid gap-3 sm:grid-cols-2">
+                  <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {categoryItems.map((item) => (
                       <li
                         key={item.id}

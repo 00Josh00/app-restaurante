@@ -63,7 +63,7 @@ export default async function DashboardPage() {
       </h1>
       <p className="mt-1 text-cream-500">¿Qué haremos hoy?</p>
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-2">
+      <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {(links[role] ?? []).map(({ href, label, desc, Icon }) => (
           <Link
             key={href}

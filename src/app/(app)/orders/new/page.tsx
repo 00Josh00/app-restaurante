@@ -139,7 +139,7 @@ export default function NewOrderPage() {
       {dataError ? (
         <p className="text-rose-400">{dataError}</p>
       ) : (
-        <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+        <div className="grid gap-6 md:grid-cols-[1fr_340px]">
           <div>
             {/* Tipo de pedido */}
             <div className="mb-4 grid grid-cols-2 gap-2">
@@ -187,7 +187,7 @@ export default function NewOrderPage() {
             )}
 
             {/* Chips de categoría (móvil/tablet) */}
-            <div className="sticky top-14 z-30 -mx-4 mb-4 bg-ink-950/95 px-4 py-2 backdrop-blur lg:hidden">
+            <div className="sticky top-14 z-30 -mx-4 mb-4 bg-ink-950/95 px-4 py-2 backdrop-blur md:hidden">
               <div className="flex gap-2 overflow-x-auto pb-0.5">
                 {itemsByCategory
                   .filter(({ items }) => items.length > 0)
@@ -286,8 +286,8 @@ export default function NewOrderPage() {
             </div>
           </div>
 
-          {/* Carrito (escritorio) */}
-          <aside className="card h-fit overflow-hidden lg:sticky lg:top-24 hidden lg:block">
+          {/* Carrito (escritorio/tablet) */}
+          <aside className="card h-fit overflow-hidden md:sticky md:top-24 hidden md:block">
             <div className="border-b border-ink-800 px-4 py-3">
               <h2 className="font-display text-lg font-semibold tracking-tight text-cream-50">
                 Pedido
@@ -315,7 +315,7 @@ export default function NewOrderPage() {
 
       {/* Barra inferior móvil: ver pedido */}
       <div
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-700 bg-ink-950/95 px-4 py-3 backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-700 bg-ink-950/95 px-4 py-3 backdrop-blur md:hidden"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.75rem)' }}
       >
         <button
@@ -331,7 +331,7 @@ export default function NewOrderPage() {
 
       {/* Sheet móvil del pedido */}
       {showSheet && (
-        <div className="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-[60] md:hidden" role="dialog" aria-modal="true">
           <div
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setShowSheet(false)}

@@ -185,7 +185,7 @@ export default function KitchenPage() {
           <p className="text-cream-400">No hay pedidos esperando.</p>
         </div>
       ) : (
-        <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {orders.map((order) => {
             const isNew = newOrderIds.includes(order.id)
             return (
