@@ -67,12 +67,10 @@
   }
 }
 
-/* En móviles (viewport tipo OPPO Reno 13F 5G ≈ 393px) afinamos la
-   escala global para que quepa mejor sin perder legibilidad */
-@media (max-width: 480px) {
-  html {
-    font-size: 14px;
-  }
+/* Escala fluida: 14px en móviles angostos (≈393px), 16px en desktop.
+   clamp() evita saltos cuando la barra del navegador oculta/cambia el viewport */
+html {
+  font-size: clamp(14px, 3.5vw, 16px);
 }
 
 @layer components {
