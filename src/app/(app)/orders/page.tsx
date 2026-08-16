@@ -55,9 +55,13 @@ export default async function OrdersPage() {
                     {label(order)}
                   </p>
                   <p className="text-xs text-cream-500">
-                    {new Date(order.created_at).toLocaleString([], {
-                      dateStyle: 'short',
-                      timeStyle: 'short',
+                    {new Date(order.created_at).toLocaleString('es-PE', {
+                      timeZone: 'America/Lima',
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
                     })}
                   </p>
                 </div>

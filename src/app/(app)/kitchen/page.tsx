@@ -202,6 +202,7 @@ export default function KitchenPage() {
                       </p>
                       <p className="text-xs text-cream-500">
                         {new Date(order.created_at).toLocaleTimeString([], {
+                          timeZone: 'America/Lima',
                           hour: '2-digit',
                           minute: '2-digit',
                         })}
