@@ -24,17 +24,24 @@ Flujo de estados de una orden: `pendiente → en_cocina → listo → entregado 
 
 ## Fases de implementación
 
-1. **Setup:** init Next.js + Supabase CLI (migraciones en repo) + conexión Vercel.
-2. **Auth y roles:** Supabase Auth (email/password), tabla `profiles` con rol, login y protección de rutas (mesero vs cocinero).
-3. **Migración de datos:** SQL de tablas + RLS (solo staff autenticado accede a órdenes).
-4. **Menú y toma de pedidos:** CRUD de menú (admin), pantalla de pedido (elegir mesa/delivery, agregar items, total).
-5. **Cocina en tiempo real:** suscripción a **Supabase Realtime** en `orders` → el cocinero recibe el pedido al instante + alerta sonora/visual. Estados `en_cocina → listo`.
-6. **PWA:** manifest + service worker → "Agregar a pantalla de inicio" en el celular.
-7. **Reportes:** dashboard (ventas del día, por mesa/delivery, platillos más vendidos).
-8. **Despliegue:** aplicar migraciones, RLS, env vars, deploy a Vercel.
+1. ✅ **Setup:** init Next.js + Supabase CLI (migraciones en repo) + conexión Vercel.
+2. ✅ **Auth y roles:** Supabase Auth (email/password), tabla `profiles` con rol, login y protección de rutas (mesero vs cocinero).
+3. ✅ **Migración de datos:** SQL de tablas + RLS (solo staff autenticado accede a órdenes).
+4. ✅ **Menú y toma de pedidos:** CRUD de menú (admin), pantalla de pedido (elegir mesa/delivery, agregar items, total).
+5. ✅ **Cocina en tiempo real:** suscripción a **Supabase Realtime** en `orders` → el cocinero recibe el pedido al instante + alerta sonora/visual. Estados `en_cocina → listo`.
+6. ✅ **PWA:** manifest + service worker → "Agregar a pantalla de inicio" en el celular.
+7. ✅ **Reportes:** dashboard (ventas del día, por mesa/delivery, platillos más vendidos).
+8. ✅ **Despliegue:** aplicar migraciones, RLS, env vars, deploy a Vercel.
+
+## Pendientes / futuras mejoras
+
+- **Notificación push en segundo plano** (Edge Function + web push) cuando el cocinero no tenga la app abierta.
+- **Inventario** (fuera de alcance por ahora; el schema queda preparado).
+- **Fotos de platillos** (Supabase Storage).
 
 ## Decisiones técnicas clave
 
-- **Notificación al cocinero:** Realtime es suficiente (la app está abierta). Notificación push en segundo plano se añade después con Edge Functions (web push).
-- **Seguridad:** RLS activo en todas las tablas; roles en `app_metadata`, nunca en datos editables por el usuario.
+- **Notificación al cocinero:** Realtime en primer plano (app abierta). Push en segundo plano se añadirá con Edge Functions.
+- **Seguridad:** RLS activo en todas las tablas; roles en la tabla `profiles` (nunca en datos editables por el usuario); signup público desactivado (solo el admin crea usuarios).
+- **Total de órdenes:** calculado en el servidor vía RPC `create_order` (el cliente no define precios).
 - **Inventario:** fuera de alcance por ahora; el schema queda preparado para añadirlo después.
