@@ -274,6 +274,7 @@ export type Database = {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      get_reports: { Args: never; Returns: Json }
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {

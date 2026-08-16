@@ -16,6 +16,7 @@ const LINKS = [
   { href: '/kitchen', label: 'Cocina', roles: ['cook', 'admin'] },
   { href: '/orders', label: 'Órdenes', roles: ['waiter', 'cook', 'admin'] },
   { href: '/menu', label: 'Menú', roles: ['waiter', 'cook', 'admin'] },
+  { href: '/reports', label: 'Reportes', roles: ['admin'] },
 ]
 
 export default function AppNav({
