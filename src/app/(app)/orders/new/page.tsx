@@ -131,9 +131,9 @@ export default function NewOrderPage() {
 
   return (
     <div>
-      <div className="mb-6">
+      <div className="mb-4">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ember-500">Sala</p>
-        <h1 className="page-title mt-1">Nuevo pedido</h1>
+        <h1 className="page-title mt-0.5">Nuevo pedido</h1>
       </div>
 
       {dataError ? (
@@ -142,7 +142,7 @@ export default function NewOrderPage() {
         <div className="grid gap-6 md:grid-cols-[1fr_340px]">
           <div>
             {/* Tipo de pedido */}
-            <div className="mb-4 grid grid-cols-2 gap-2">
+            <div className="mb-3 grid grid-cols-2 gap-2">
               {(
                 [
                   { type: 'mesa', label: 'En mesa', Icon: TableIcon },
@@ -168,7 +168,7 @@ export default function NewOrderPage() {
               <select
                 value={tableId}
                 onChange={(e) => setTableId(e.target.value)}
-                className="input mb-6"
+                className="input mb-3"
               >
                 {tables.map((t) => (
                   <option key={t.id} value={t.id}>
@@ -182,12 +182,12 @@ export default function NewOrderPage() {
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="Nombre del cliente"
-                className="input mb-6"
+                className="input mb-3"
               />
             )}
 
             {/* Chips de categoría (móvil/tablet) */}
-            <div className="sticky top-14 z-30 -mx-4 mb-4 bg-ink-950/95 px-4 py-2 backdrop-blur md:hidden">
+            <div className="sticky top-14 z-30 -mx-4 mb-3 bg-ink-950/95 px-4 py-1.5 backdrop-blur md:hidden">
               <div className="flex gap-2 overflow-x-auto pb-0.5">
                 {itemsByCategory
                   .filter(({ items }) => items.length > 0)
@@ -199,7 +199,7 @@ export default function NewOrderPage() {
                           .getElementById(`cat-${category.id}`)
                           ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
                       }
-                      className="shrink-0 whitespace-nowrap rounded-full border border-ink-700 bg-ink-900 px-3 py-1.5 text-sm text-cream-300 transition hover:border-ember-500/50 hover:text-ember-400"
+                      className="shrink-0 whitespace-nowrap rounded-full border border-ink-700 bg-ink-900 px-3 py-1 text-xs text-cream-300 transition hover:border-ember-500/50 hover:text-ember-400"
                     >
                       {category.name}
                     </button>
@@ -208,11 +208,11 @@ export default function NewOrderPage() {
             </div>
 
             {/* Menú */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               {itemsByCategory.map(({ category, items: catItems }) => (
-                <section key={category.id} id={`cat-${category.id}`} className="scroll-mt-28">
-                  <div className="mb-3 flex items-center gap-3">
-                    <span className="h-px w-8 bg-ember-500/60" />
+                <section key={category.id} id={`cat-${category.id}`} className="scroll-mt-24">
+                  <div className="mb-2 flex items-center gap-3">
+                    <span className="h-px w-6 bg-ember-500/60" />
                     <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-cream-400">
                       {category.name}
                     </h2>
@@ -220,7 +220,7 @@ export default function NewOrderPage() {
                   {catItems.length === 0 ? (
                     <p className="text-sm text-cream-500">Sin platillos disponibles.</p>
                   ) : (
-                    <ul className="grid gap-2 sm:grid-cols-2">
+                    <ul className="grid grid-cols-2 gap-2 lg:grid-cols-3">
                       {catItems.map((item) => {
                         const qty = cart.find((c) => c.item.id === item.id)?.quantity ?? 0
                         if (qty === 0) {
@@ -228,17 +228,17 @@ export default function NewOrderPage() {
                             <li key={item.id}>
                               <button
                                 onClick={() => addToCart(item)}
-                                className="group flex w-full items-center justify-between gap-3 rounded-xl border border-ink-700 bg-ink-900 p-3 text-left transition active:scale-[0.99] hover:border-ember-500/60 hover:bg-ink-800"
+                                className="group flex w-full items-center justify-between gap-2 rounded-xl border border-ink-700 bg-ink-900 p-2.5 text-left transition active:scale-[0.99] hover:border-ember-500/60 hover:bg-ink-800"
                               >
                                 <span className="min-w-0">
                                   <span className="block truncate text-sm font-medium text-cream-100">
                                     {item.name}
                                   </span>
-                                  <span className="mt-0.5 block font-mono text-sm tabular-nums text-cream-500 group-hover:text-ember-400">
+                                  <span className="mt-0.5 block font-mono text-xs tabular-nums text-cream-500 group-hover:text-ember-400">
                                     S/{Number(item.price).toFixed(2)}
                                   </span>
                                 </span>
-                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500/50 group-hover:bg-ember-500 group-hover:text-ink-950">
+                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500/50 group-hover:bg-ember-500 group-hover:text-ink-950">
                                   <PlusIcon className="h-4 w-4" />
                                 </span>
                               </button>
@@ -247,29 +247,29 @@ export default function NewOrderPage() {
                         }
                         return (
                           <li key={item.id}>
-                            <div className="flex w-full items-center justify-between gap-3 rounded-xl border border-ember-500/40 bg-ember-500/[0.06] p-3">
+                            <div className="flex w-full items-center justify-between gap-2 rounded-xl border border-ember-500/40 bg-ember-500/[0.06] p-2.5">
                               <span className="min-w-0">
                                 <span className="block truncate text-sm font-medium text-cream-100">
                                   {item.name}
                                 </span>
-                                <span className="mt-0.5 block font-mono text-sm tabular-nums text-ember-400">
+                                <span className="mt-0.5 block font-mono text-xs tabular-nums text-ember-400">
                                   S/{Number(item.price).toFixed(2)}
                                 </span>
                               </span>
-                              <div className="flex items-center gap-2">
+                              <div className="flex shrink-0 items-center gap-1.5">
                                 <button
                                   onClick={() => removeFromCart(item.id)}
-                                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-ink-700 text-cream-300 transition active:scale-95 hover:border-ink-600 hover:text-cream-100"
+                                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-ink-700 text-cream-300 transition active:scale-95 hover:border-ink-600 hover:text-cream-100"
                                   aria-label={`Quitar ${item.name}`}
                                 >
                                   <MinusIcon className="h-4 w-4" />
                                 </button>
-                                <span className="w-6 text-center font-mono text-sm font-semibold text-cream-100">
+                                <span className="w-5 text-center font-mono text-sm font-semibold text-cream-100">
                                   {qty}
                                 </span>
                                 <button
                                   onClick={() => addToCart(item)}
-                                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-ember-500/50 bg-ember-500 text-ink-950 transition active:scale-95 hover:bg-ember-400"
+                                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-ember-500/50 bg-ember-500 text-ink-950 transition active:scale-95 hover:bg-ember-400"
                                   aria-label={`Agregar ${item.name}`}
                                 >
                                   <PlusIcon className="h-4 w-4" />
