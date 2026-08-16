@@ -7,9 +7,6 @@ import { NAV_LINKS } from '@/components/app-nav'
 export default function AppBottomNav({ role }: { role: string }) {
   const pathname = usePathname()
 
-  // En la toma de pedido, la barra de carrito fija reemplaza esta navegación
-  if (pathname.startsWith('/orders/new')) return null
-
   const links = NAV_LINKS.filter((l) => l.roles.includes(role))
 
   return (
