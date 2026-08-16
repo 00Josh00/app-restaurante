@@ -82,13 +82,13 @@ export default async function ReportsPage({
       <div className="mb-6 grid gap-4 sm:grid-cols-2">
         <div className="card p-5">
           <p className="text-sm text-cream-500">Ventas del mes</p>
-          <p className="font-display mt-1 text-4xl font-semibold tabular-nums text-ember-400">
+          <p className="font-display mt-1 text-3xl font-semibold tabular-nums text-ember-400 sm:text-4xl">
             S/{Number(r.total.revenue).toFixed(2)}
           </p>
         </div>
         <div className="card p-5">
           <p className="text-sm text-cream-500">Órdenes cobradas</p>
-          <p className="font-display mt-1 text-4xl font-semibold tabular-nums text-cream-50">
+          <p className="font-display mt-1 text-3xl font-semibold tabular-nums text-cream-50 sm:text-4xl">
             {r.total.count}
           </p>
         </div>

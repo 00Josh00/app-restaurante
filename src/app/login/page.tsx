@@ -37,11 +37,11 @@ export default function LoginPage() {
 
       <form
         onSubmit={handleSubmit}
-        className="relative w-full max-w-sm rounded-3xl border border-ink-700 bg-ink-900/90 p-8 shadow-2xl shadow-black/50 backdrop-blur"
+        className="relative w-full max-w-sm rounded-3xl border border-ink-700 bg-ink-900/90 p-6 shadow-2xl shadow-black/50 backdrop-blur"
       >
-        <div className="mb-8 flex flex-col items-center text-center">
-          <LogoMark className="h-12 w-12 text-ember-500" />
-          <h1 className="font-display mt-4 text-3xl font-semibold tracking-tight text-cream-50">
+        <div className="mb-6 flex flex-col items-center text-center">
+          <LogoMark className="h-10 w-10 text-ember-500" />
+          <h1 className="font-display mt-3 text-2xl font-semibold tracking-tight text-cream-50">
             Kleta
           </h1>
           <p className="mt-1 text-sm text-cream-500">Inicia sesión para operar</p>

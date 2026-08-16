@@ -63,14 +63,14 @@ export default async function DashboardPage() {
       </h1>
       <p className="mt-1 text-cream-500">¿Qué haremos hoy?</p>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2">
+      <div className="mt-8 grid gap-3 sm:grid-cols-2">
         {(links[role] ?? []).map(({ href, label, desc, Icon }) => (
           <Link
             key={href}
             href={href}
-            className="group card flex items-start gap-4 p-5 transition hover:border-ember-500/60 hover:bg-ink-800"
+            className="group card flex items-start gap-4 p-4 transition hover:border-ember-500/60 hover:bg-ink-800"
           >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500/50 group-hover:bg-ember-500/10">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500/50 group-hover:bg-ember-500/10">
               <Icon className="h-5 w-5" />
             </span>
             <span>

@@ -208,7 +208,7 @@ export default function NewOrderPage() {
             </div>
 
             {/* Menú */}
-            <div className="space-y-8">
+            <div className="space-y-6">
               {itemsByCategory.map(({ category, items: catItems }) => (
                 <section key={category.id} id={`cat-${category.id}`} className="scroll-mt-28">
                   <div className="mb-3 flex items-center gap-3">

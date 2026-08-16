@@ -67,6 +67,14 @@
   }
 }
 
+/* En móviles (viewport tipo OPPO Reno 13F 5G ≈ 393px) afinamos la
+   escala global para que quepa mejor sin perder legibilidad */
+@media (max-width: 480px) {
+  html {
+    font-size: 15px;
+  }
+}
+
 @layer components {
   .card {
     @apply rounded-2xl border border-ink-700 bg-ink-900;
@@ -117,7 +125,7 @@
   }
 
   .page-title {
-    @apply font-display text-2xl font-semibold tracking-tight text-cream-50 sm:text-3xl;
+    @apply font-display text-xl font-semibold tracking-tight text-cream-50 sm:text-2xl lg:text-3xl;
   }
 
   .section-title {

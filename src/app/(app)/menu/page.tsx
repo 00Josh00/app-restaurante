@@ -33,7 +33,7 @@ export default async function MenuPage() {
           {isAdmin ? ' Crea la primera con "Nueva categoría".' : ''}
         </div>
       ) : (
-        <div className="space-y-10">
+        <div className="space-y-8">
           {categories?.map((category) => {
             const categoryItems = items?.filter((i) => i.category_id === category.id) ?? []
 
