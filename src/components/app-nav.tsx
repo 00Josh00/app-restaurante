@@ -10,6 +10,7 @@ import {
   ListIcon,
   LogoMark,
   LogoutIcon,
+  UsersIcon,
   UtensilsIcon,
 } from '@/components/ui/icons'
 
@@ -25,6 +26,7 @@ const LINKS = [
   { href: '/orders', label: 'Órdenes', roles: ['waiter', 'cook', 'admin'], Icon: ListIcon },
   { href: '/menu', label: 'Menú', roles: ['waiter', 'cook', 'admin'], Icon: BookIcon },
   { href: '/reports', label: 'Reportes', roles: ['admin'], Icon: ChartIcon },
+  { href: '/users', label: 'Usuarios', roles: ['admin'], Icon: UsersIcon },
 ]
 
 export default function AppNav({

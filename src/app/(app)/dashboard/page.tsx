@@ -5,6 +5,7 @@ import {
   ChartIcon,
   ClipboardIcon,
   ListIcon,
+  UsersIcon,
   UtensilsIcon,
 } from '@/components/ui/icons'
 
@@ -48,6 +49,7 @@ export default async function DashboardPage() {
       { href: '/orders', label: 'Órdenes', desc: 'Ver órdenes y cobrar', Icon: ListIcon },
       { href: '/menu', label: 'Menú', desc: 'Administrar categorías y platillos', Icon: BookIcon },
       { href: '/reports', label: 'Reportes', desc: 'Métricas y ventas del día', Icon: ChartIcon },
+      { href: '/users', label: 'Usuarios', desc: 'Crear meseros, cocineros y admins', Icon: UsersIcon },
     ],
   }
 
