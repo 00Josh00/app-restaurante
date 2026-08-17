@@ -146,11 +146,8 @@ export default function NewOrderPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="eyebrow">Sala</p>
-          <h1 className="page-title mt-1">Nuevo pedido</h1>
-        </div>
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <h1 className="page-title">Nuevo pedido</h1>
         <span className="badge-neutral">
           <ShoppingBagIcon className="h-3.5 w-3.5" />
           {cart.length} {cart.length === 1 ? 'plato' : 'platos'}
@@ -162,49 +159,88 @@ export default function NewOrderPage() {
       ) : (
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
           <div>
-            {/* Tipo de pedido */}
-            <div className="mb-3 grid grid-cols-2 gap-2 rounded-2xl border border-ink-800 bg-ink-900/60 p-1">
-              {(
-                [
-                  { type: 'mesa', label: 'En mesa', Icon: TableIcon },
-                  { type: 'delivery', label: 'Delivery', Icon: BikeIcon },
-                ] as const
-              ).map(({ type, label, Icon }) => (
-                <button
-                  key={type}
-                  onClick={() => setOrderType(type)}
-                  className={`flex h-11 items-center justify-center gap-2 rounded-xl text-sm font-medium transition active:scale-[0.98] ${
-                    orderType === type
-                      ? 'bg-ember-500 text-ink-950'
-                      : 'text-cream-300 hover:text-cream-100'
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </button>
-              ))}
+            {/* Tipo + mesa/nombre en una fila */}
+            <div className="mb-2 flex gap-2">
+              <div className="grid grid-cols-2 gap-1 rounded-xl border border-ink-800 bg-ink-900/60 p-0.5">
+                {(
+                  [
+                    { type: 'mesa', label: 'Mesa', Icon: TableIcon },
+                    { type: 'delivery', label: 'Delivery', Icon: BikeIcon },
+                  ] as const
+                ).map(({ type, label, Icon }) => (
+                  <button
+                    key={type}
+                    onClick={() => setOrderType(type)}
+                    className={`flex h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium transition active:scale-[0.98] ${
+                      orderType === type
+                        ? 'bg-ember-500 text-ink-950'
+                        : 'text-cream-300 hover:text-cream-100'
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {orderType === 'mesa' ? (
+                <select value={tableId} onChange={(e) => setTableId(e.target.value)} className="input h-9 flex-1 text-xs">
+                  {tables.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Nombre"
+                  className="input h-9 flex-1 text-xs"
+                />
+              )}
             </div>
 
-            {orderType === 'mesa' ? (
-              <select value={tableId} onChange={(e) => setTableId(e.target.value)} className="input mb-3">
-                {tables.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.label}
-                  </option>
+            {/* Búsqueda + chips */}
+            <div className="sticky top-14 z-30 -mx-3 mb-2 border-b border-ink-800/80 bg-ink-950/95 px-3 py-1.5 backdrop-blur-md md:hidden">
+              <div className="relative mb-1">
+                <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-cream-500" />
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Buscar…"
+                  className="input h-8 pl-8 text-xs"
+                />
+                {query && (
+                  <button
+                    onClick={() => setQuery('')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-cream-500 transition hover:text-cream-200"
+                    aria-label="Limpiar búsqueda"
+                  >
+                    <CloseIcon className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+              <div className="flex gap-1.5 overflow-x-auto pb-0.5">
+                {itemsByCategory.map(({ category }) => (
+                  <button
+                    key={category.id}
+                    onClick={() =>
+                      document
+                        .getElementById(`cat-${category.id}`)
+                        ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    }
+                    className="chip shrink-0 py-1 text-[11px]"
+                  >
+                    {category.name}
+                  </button>
                 ))}
-              </select>
-            ) : (
-              <input
-                type="text"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Nombre del cliente"
-                className="input mb-3"
-              />
-            )}
+              </div>
+            </div>
 
-            {/* Búsqueda */}
-            <div className="relative mb-3">
+            {/* Búsqueda desktop */}
+            <div className="relative mb-3 hidden md:block">
               <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-cream-500" />
               <input
                 type="text"
@@ -222,25 +258,6 @@ export default function NewOrderPage() {
                   <CloseIcon className="h-4 w-4" />
                 </button>
               )}
-            </div>
-
-            {/* Chips de categoría (móvil/tablet) */}
-            <div className="sticky top-14 z-30 -mx-3 mb-3 border-y border-ink-800/80 bg-ink-950/95 px-3 py-1.5 backdrop-blur-md md:hidden">
-              <div className="flex gap-2 overflow-x-auto pb-0.5">
-                {itemsByCategory.map(({ category }) => (
-                  <button
-                    key={category.id}
-                    onClick={() =>
-                      document
-                        .getElementById(`cat-${category.id}`)
-                        ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                    }
-                    className="chip"
-                  >
-                    {category.name}
-                  </button>
-                ))}
-              </div>
             </div>
 
             {/* Menú */}
