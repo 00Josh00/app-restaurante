@@ -22,16 +22,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="relative min-h-screen bg-ink-950">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(70%_45%_at_50%_-10%,rgba(245,158,11,0.07),transparent)]" />
-      <div className="relative">
-        <AppNav
-          role={profile?.role ?? 'waiter'}
-          fullName={profile?.full_name ?? ''}
-        />
-        <main className="mx-auto max-w-6xl p-3 pb-32 sm:p-6 sm:pb-6">{children}</main>
-        <AppBottomNav
-          role={profile?.role ?? 'waiter'}
-        />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(80%_45%_at_50%_-10%,rgba(245,158,11,0.08),transparent)]" />
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(40%_30%_at_100%_100%,rgba(245,158,11,0.04),transparent)]" />
+      <div className="relative flex min-h-screen flex-col">
+        <AppNav role={profile?.role ?? 'waiter'} fullName={profile?.full_name ?? ''} />
+        <main className="mx-auto w-full max-w-6xl flex-1 p-3 pb-32 sm:p-6 sm:pb-10">
+          {children}
+        </main>
+        <AppBottomNav role={profile?.role ?? 'waiter'} />
       </div>
     </div>
   )

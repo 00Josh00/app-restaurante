@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import UserForm from '@/components/users/user-form'
 import UserRow from '@/components/users/user-row'
-import { UsersIcon } from '@/components/ui/icons'
+import { ShieldIcon, UsersIcon } from '@/components/ui/icons'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,22 +32,40 @@ export default async function UsersPage() {
     <div className="mx-auto max-w-3xl">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-ember-500">
+          <p className="flex items-center gap-1.5 eyebrow">
             <UsersIcon className="h-4 w-4" /> Equipo
           </p>
           <h1 className="page-title mt-1">Usuarios</h1>
+          <p className="mt-1 text-sm text-cream-500">
+            Crea cuentas y asigna roles a tu equipo.
+          </p>
         </div>
         <UserForm />
       </div>
 
       {!users || users.length === 0 ? (
-        <div className="card p-10 text-center text-cream-500">Aún no hay usuarios.</div>
+        <div className="empty-state">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full border border-ink-700 bg-ink-800 text-cream-500">
+            <ShieldIcon className="h-7 w-7" />
+          </span>
+          <div>
+            <p className="font-medium text-cream-200">Aún no hay usuarios</p>
+            <p className="mt-1 text-sm text-cream-500">
+              Crea el primero con &ldquo;Nuevo usuario&rdquo;.
+            </p>
+          </div>
+        </div>
       ) : (
-        <ul className="space-y-2.5">
-          {users.map((u) => (
-            <UserRow key={u.id} user={u} isSelf={u.id === user?.id} />
-          ))}
-        </ul>
+        <>
+          <p className="mb-3 text-sm text-cream-500">
+            {users.length} {users.length === 1 ? 'usuario' : 'usuarios'}
+          </p>
+          <ul className="space-y-2.5">
+            {users.map((u) => (
+              <UserRow key={u.id} user={u} isSelf={u.id === user?.id} />
+            ))}
+          </ul>
+        </>
       )}
     </div>
   )

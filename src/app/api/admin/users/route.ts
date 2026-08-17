@@ -4,20 +4,22 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 export const dynamic = 'force-dynamic'
 
-const ROLES = ['admin', 'waiter', 'cook']
+type AppRole = 'admin' | 'waiter' | 'cook'
 
-async function isAdmin() {
+const ROLES: AppRole[] = ['admin', 'waiter', 'cook']
+
+async function getAdminUser() {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  if (!user) return false
+  if (!user) return null
   const { data } = await supabase
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single()
-  return data?.role === 'admin'
+  return data?.role === 'admin' ? user : null
 }
 
 function badRequest(message: string) {
@@ -25,7 +27,8 @@ function badRequest(message: string) {
 }
 
 export async function POST(req: Request) {
-  if (!(await isAdmin())) {
+  const adminUser = await getAdminUser()
+  if (!adminUser) {
     return NextResponse.json({ error: 'Sin permiso' }, { status: 403 })
   }
 
@@ -38,7 +41,7 @@ export async function POST(req: Request) {
 
   const email = body.email?.trim().toLowerCase() ?? ''
   const password = body.password ?? ''
-  const role = body.role ?? 'waiter'
+  const role = (body.role ?? 'waiter') as AppRole
   const full_name = body.full_name?.trim() ?? ''
 
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return badRequest('Email inválido')
@@ -67,16 +70,22 @@ export async function POST(req: Request) {
 }
 
 export async function PUT(req: Request) {
-  if (!(await isAdmin())) {
+  const adminUser = await getAdminUser()
+  if (!adminUser) {
     return NextResponse.json({ error: 'Sin permiso' }, { status: 403 })
   }
 
-  const body = (await req.json()) as { id?: string; role?: string; full_name?: string }
+  const body = (await req.json()) as { id?: string; role?: AppRole; full_name?: string }
   if (!body.id) return badRequest('Falta el usuario')
   if (body.role && !ROLES.includes(body.role)) return badRequest('Rol inválido')
 
+  // Un admin no puede cambiar su propio rol (evita lock-out)
+  if (body.id === adminUser.id && body.role && body.role !== 'admin') {
+    return badRequest('No puedes cambiar tu propio rol')
+  }
+
   const admin = createAdminClient()
-  const payload: { role?: string; full_name?: string | null } = {}
+  const payload: { role?: AppRole; full_name?: string | null } = {}
   if (body.role) payload.role = body.role
   if (body.full_name !== undefined) payload.full_name = body.full_name.trim() || null
 
@@ -87,12 +96,14 @@ export async function PUT(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  if (!(await isAdmin())) {
+  const adminUser = await getAdminUser()
+  if (!adminUser) {
     return NextResponse.json({ error: 'Sin permiso' }, { status: 403 })
   }
 
   const body = (await req.json()) as { id?: string }
   if (!body.id) return badRequest('Falta el usuario')
+  if (body.id === adminUser.id) return badRequest('No puedes eliminar tu propia cuenta')
 
   const admin = createAdminClient()
   const { error } = await admin.auth.admin.deleteUser(body.id)

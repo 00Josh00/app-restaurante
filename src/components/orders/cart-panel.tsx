@@ -1,6 +1,6 @@
 'use client'
 
-import { MinusIcon, PlusIcon } from '@/components/ui/icons'
+import { MinusIcon, PlusIcon, SendIcon } from '@/components/ui/icons'
 import type { MenuItem } from '@/app/(app)/orders/new/page'
 
 type CartItem = { item: MenuItem; quantity: number }
@@ -35,30 +35,39 @@ export default function CartPanel({
   return (
     <>
       {cart.length === 0 ? (
-        <p className="text-sm text-cream-500">El pedido está vacío.</p>
+        <p className="rounded-xl border border-dashed border-ink-700 px-4 py-6 text-center text-sm text-cream-500">
+          El pedido está vacío. Toca un platillo para agregarlo.
+        </p>
       ) : (
-        <ul className="mb-4 space-y-2.5">
+        <ul className="mb-4 space-y-2">
           {cart.map(({ item, quantity }) => (
-            <li key={item.id} className="flex items-center gap-2 text-sm">
-              <span className="min-w-0 flex-1 truncate text-cream-200">{item.name}</span>
-              <div className="flex items-center gap-1.5">
+            <li
+              key={item.id}
+              className="flex items-center gap-2 rounded-xl border border-ink-800 bg-ink-950/60 px-3 py-2 text-sm"
+            >
+              <span className="min-w-0 flex-1 truncate font-medium text-cream-100">
+                {item.name}
+              </span>
+              <div className="flex shrink-0 items-center gap-1.5">
                 <button
                   onClick={() => onRemove(item.id)}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-ink-700 text-cream-400 transition active:scale-95 hover:border-ink-600 hover:text-cream-100"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-ink-700 text-cream-400 transition hover:border-ink-600 hover:text-cream-100 active:scale-95"
                   aria-label={`Quitar ${item.name}`}
                 >
                   <MinusIcon className="h-3.5 w-3.5" />
                 </button>
-                <span className="w-5 text-center font-mono text-cream-100">{quantity}</span>
+                <span className="w-5 text-center font-mono tabular-nums text-cream-100">
+                  {quantity}
+                </span>
                 <button
                   onClick={() => onAdd(item)}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-ink-700 text-cream-400 transition active:scale-95 hover:border-ember-500/60 hover:text-ember-400"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-ember-500/50 bg-ember-500/15 text-ember-400 transition hover:bg-ember-500 hover:text-ink-950 active:scale-95"
                   aria-label={`Agregar ${item.name}`}
                 >
                   <PlusIcon className="h-3.5 w-3.5" />
                 </button>
               </div>
-              <span className="w-20 text-right font-mono font-medium tabular-nums text-cream-100">
+              <span className="w-20 shrink-0 text-right font-mono font-medium tabular-nums text-cream-100">
                 S/{(Number(item.price) * quantity).toFixed(2)}
               </span>
             </li>
@@ -77,8 +86,8 @@ export default function CartPanel({
             <span className="font-mono tabular-nums text-cream-200">S/{deliveryFee.toFixed(2)}</span>
           </div>
         )}
-        <div className="flex items-center justify-between pt-1">
-          <span className="text-sm font-medium text-cream-100">Total</span>
+        <div className="flex items-end justify-between pt-1.5">
+          <span className="text-sm font-semibold text-cream-100">Total</span>
           <span className="font-display text-2xl font-semibold tabular-nums text-ember-400">
             S/{total.toFixed(2)}
           </span>
@@ -89,17 +98,18 @@ export default function CartPanel({
         type="text"
         value={note}
         onChange={(e) => onNoteChange(e.target.value)}
-        placeholder="Nota (opcional)"
+        placeholder="Nota para la cocina (opcional)"
         className="input mb-4"
       />
 
-      {error && <p className="mb-3 text-sm text-rose-400">{error}</p>}
+      {error && <p className="alert-error mb-4">{error}</p>}
 
       <button
         onClick={onSubmit}
         disabled={loading || cart.length === 0}
-        className="btn-primary w-full py-2.5"
+        className="btn-primary w-full py-3"
       >
+        <SendIcon className="h-4 w-4" />
         {loading ? 'Enviando…' : 'Enviar a cocina'}
       </button>
     </>

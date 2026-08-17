@@ -238,6 +238,24 @@ export type Database = {
         }
         Relationships: []
       }
+      settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: number | null
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: number | null
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -245,10 +263,10 @@ export type Database = {
     Functions: {
       create_order: {
         Args: {
-          p_customer_name: string
+          p_customer_name: string | null
           p_items: Json
-          p_note: string
-          p_table_id: string
+          p_note: string | null
+          p_table_id: string | null
           p_type: Database["public"]["Enums"]["order_type"]
         }
         Returns: {
@@ -275,6 +293,10 @@ export type Database = {
         Returns: Database["public"]["Enums"]["app_role"]
       }
       get_reports: { Args: never; Returns: Json }
+      get_reports_month: {
+        Args: { p_month: string }
+        Returns: Json
+      }
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {

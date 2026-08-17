@@ -27,3 +27,10 @@ export async function proxy(request: NextRequest) {
 
   return supabaseResponse
 }
+
+// Evita refrescar sesión en archivos estáticos y assets de la PWA
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|favicon\\.ico|icons/.*|manifest\\.webmanifest|serwist/.*|sw\\.js|~offline).*)',
+  ],
+}

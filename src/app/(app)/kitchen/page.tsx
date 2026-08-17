@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { RealtimeChannel } from '@supabase/supabase-js'
-import { BellIcon, CheckIcon, UtensilsIcon } from '@/components/ui/icons'
+import { STATUS_ACCENT, STATUS_BADGE, STATUS_LABELS, type OrderStatus } from '@/lib/order-status'
+import { BellIcon, CheckIcon, ClockIcon, PlayIcon, UtensilsIcon } from '@/components/ui/icons'
 
 type OrderItem = { id: string; name: string; quantity: number }
 type Order = {
@@ -12,35 +13,11 @@ type Order = {
   table_id: string | null
   customer_name: string | null
   note: string | null
-  status: 'pendiente' | 'en_cocina' | 'listo' | 'entregado' | 'cobrado'
+  status: OrderStatus
   created_at: string
   order_items: OrderItem[]
 }
 type TableMap = Record<string, string>
-
-const STATUS_LABELS: Record<Order['status'], string> = {
-  pendiente: 'Pendiente',
-  en_cocina: 'En cocina',
-  listo: 'Listo',
-  entregado: 'Entregado',
-  cobrado: 'Cobrado',
-}
-
-const STATUS_ACCENT: Record<Order['status'], string> = {
-  pendiente: 'bg-rose-500',
-  en_cocina: 'bg-ember-500',
-  listo: 'bg-emerald-500',
-  entregado: 'bg-ink-600',
-  cobrado: 'bg-ink-600',
-}
-
-const STATUS_BADGE: Record<Order['status'], string> = {
-  pendiente: 'badge-rose',
-  en_cocina: 'badge-amber',
-  listo: 'badge-emerald',
-  entregado: 'badge-neutral',
-  cobrado: 'badge-neutral',
-}
 
 function playBeep() {
   try {
@@ -57,6 +34,21 @@ function playBeep() {
   } catch {
     // audio no disponible
   }
+}
+
+function Elapsed({ from }: { from: string }) {
+  const [now, setNow] = useState(0)
+
+  useEffect(() => {
+    const update = () => setNow(Date.now())
+    update()
+    const t = setInterval(update, 30_000)
+    return () => clearInterval(t)
+  }, [])
+
+  const mins = Math.max(0, Math.floor((now - new Date(from).getTime()) / 60_000))
+  if (mins < 1) return <span>recién</span>
+  return <span>{mins} min</span>
 }
 
 export default function KitchenPage() {
@@ -113,22 +105,22 @@ export default function KitchenPage() {
             setTimeout(() => {
               setNewOrderIds((prev) => prev.filter((id) => id !== changed.id))
             }, 6000)
-            fetchOrderWithItems(changed.id).then((full) => {
-              if (full) {
-                setOrders((prev) =>
-                  prev.map((o) => (o.id === full.id ? full : o))
-                )
-              }
-            })
+            fetchOrderWithItems(changed.id)
+              .then((full) => {
+                if (full) {
+                  setOrders((prev) => prev.map((o) => (o.id === full.id ? full : o)))
+                }
+              })
+              .catch(() => {
+                // Sin detalle: la tarjeta se muestra con los items del payload
+              })
             return
           }
 
           if (payload.eventType === 'UPDATE' && changed) {
             setOrders((prev) => {
-              if (changed.status === 'listo' || changed.status === 'entregado') {
-                if (changed.status === 'entregado') {
-                  return prev.filter((o) => o.id !== changed.id)
-                }
+              if (changed.status === 'entregado' || changed.status === 'cobrado') {
+                return prev.filter((o) => o.id !== changed.id)
               }
               const exists = prev.some((o) => o.id === changed.id)
               if (exists) {
@@ -148,7 +140,7 @@ export default function KitchenPage() {
     }
   }, [])
 
-  const updateStatus = async (id: string, status: Order['status']) => {
+  const updateStatus = async (id: string, status: OrderStatus) => {
     const supabase = createClient()
     const { error } = await supabase.from('orders').update({ status }).eq('id', id)
     if (error) console.error(error)
@@ -159,30 +151,55 @@ export default function KitchenPage() {
     return `Delivery · ${order.customer_name ?? ''}`
   }
 
+  const pendingCount = orders.filter((o) => o.status === 'pendiente').length
+
   return (
     <div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-ember-500">
+          <p className="flex items-center gap-1.5 eyebrow">
             <UtensilsIcon className="h-4 w-4" /> Cocina
           </p>
           <h1 className="page-title mt-1">Órdenes en vivo</h1>
         </div>
-        <span className="badge-amber">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember-400 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-ember-500" />
+        <div className="flex items-center gap-2">
+          {pendingCount > 0 && (
+            <span className="badge-rose">
+              {pendingCount} {pendingCount === 1 ? 'pendiente' : 'pendientes'}
+            </span>
+          )}
+          <span className="badge-amber">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-ember-500" />
+            </span>
+            En vivo
           </span>
-          En vivo
-        </span>
+        </div>
       </div>
 
       {loading ? (
-        <p className="text-cream-500">Cargando…</p>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="card p-4">
+              <div className="skeleton mb-3 h-5 w-2/3" />
+              <div className="skeleton mb-2 h-3 w-full" />
+              <div className="skeleton mb-2 h-3 w-full" />
+              <div className="skeleton h-9 w-full" />
+            </div>
+          ))}
+        </div>
       ) : orders.length === 0 ? (
-        <div className="card flex flex-col items-center gap-3 p-12 text-center">
-          <BellIcon className="h-10 w-10 text-cream-500" />
-          <p className="text-cream-400">No hay pedidos esperando.</p>
+        <div className="empty-state">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full border border-ink-700 bg-ink-800 text-cream-500">
+            <BellIcon className="h-7 w-7" />
+          </span>
+          <div>
+            <p className="font-medium text-cream-200">No hay pedidos esperando</p>
+            <p className="mt-1 text-sm text-cream-500">
+              Los nuevos pedidos aparecerán aquí en tiempo real.
+            </p>
+          </div>
         </div>
       ) : (
         <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -191,21 +208,18 @@ export default function KitchenPage() {
             return (
               <li
                 key={order.id}
-                className={`card overflow-hidden ${isNew ? 'ring-2 ring-ember-500/40 animate-pulse' : ''}`}
+                className={`card overflow-hidden p-0 ${isNew ? 'animate-pulse ring-2 ring-ember-500/40' : ''}`}
               >
                 <div className={`h-1 w-full ${STATUS_ACCENT[order.status]}`} />
                 <div className="p-4">
                   <div className="mb-3 flex items-start justify-between gap-2">
-                    <div>
-                      <p className="font-display text-lg font-semibold text-cream-50">
+                    <div className="min-w-0">
+                      <p className="font-display truncate text-lg font-semibold text-cream-50">
                         {orderLabel(order)}
                       </p>
-                      <p className="text-xs text-cream-500">
-                        {new Date(order.created_at).toLocaleTimeString([], {
-                          timeZone: 'America/Lima',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
+                      <p className="mt-0.5 flex items-center gap-1.5 text-xs text-cream-500">
+                        <ClockIcon className="h-3.5 w-3.5" />
+                        <Elapsed from={order.created_at} />
                       </p>
                     </div>
                     <span className={STATUS_BADGE[order.status]}>
@@ -217,10 +231,10 @@ export default function KitchenPage() {
                     {order.order_items?.map((item) => (
                       <li
                         key={item.id}
-                        className="flex items-baseline justify-between gap-2 text-sm text-cream-200"
+                        className="flex items-baseline justify-between gap-2 rounded-lg bg-ink-950/60 px-2.5 py-1.5 text-sm text-cream-200"
                       >
                         <span className="min-w-0 flex-1 truncate">{item.name}</span>
-                        <span className="font-mono text-xs tabular-nums text-cream-500">
+                        <span className="font-mono text-xs font-semibold tabular-nums text-ember-400">
                           ×{item.quantity}
                         </span>
                       </li>
@@ -228,9 +242,7 @@ export default function KitchenPage() {
                   </ul>
 
                   {order.note && (
-                    <p className="mb-3 rounded-lg border border-ember-500/30 bg-ember-500/10 px-2.5 py-1.5 text-xs text-ember-300">
-                      {order.note}
-                    </p>
+                    <p className="note-highlight mb-3">{order.note}</p>
                   )}
 
                   <div className="flex gap-2">
@@ -239,6 +251,7 @@ export default function KitchenPage() {
                         onClick={() => updateStatus(order.id, 'en_cocina')}
                         className="btn-primary flex-1 py-2.5"
                       >
+                        <PlayIcon className="h-4 w-4" />
                         Empezar
                       </button>
                     )}

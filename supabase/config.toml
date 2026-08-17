@@ -68,7 +68,8 @@ schema_paths = []
 enabled = true
 # Specifies an ordered list of seed files to load during db reset.
 # Supports glob patterns relative to supabase directory: "./seeds/*.sql"
-sql_paths = ["./seed.sql"]
+# El seed del menú se aplica como migración (20260816200000_seed_cevicheria_menu.sql).
+sql_paths = []
 
 [db.network_restrictions]
 # Enable management of network restrictions.

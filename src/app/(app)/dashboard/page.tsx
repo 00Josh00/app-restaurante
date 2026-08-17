@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import {
   BookIcon,
   ChartIcon,
+  ChevronRightIcon,
   ClipboardIcon,
   ListIcon,
   UsersIcon,
@@ -48,37 +49,53 @@ export default async function DashboardPage() {
       { href: '/kitchen', label: 'Cocina', desc: 'Recibir y preparar pedidos', Icon: UtensilsIcon },
       { href: '/orders', label: 'Órdenes', desc: 'Ver órdenes y cobrar', Icon: ListIcon },
       { href: '/menu', label: 'Menú', desc: 'Administrar categorías y platillos', Icon: BookIcon },
-      { href: '/reports', label: 'Reportes', desc: 'Métricas y ventas del día', Icon: ChartIcon },
+      { href: '/reports', label: 'Reportes', desc: 'Ventas del mes y métricas', Icon: ChartIcon },
       { href: '/users', label: 'Usuarios', desc: 'Crear meseros, cocineros y admins', Icon: UsersIcon },
     ],
   }
 
-  return (
-    <div className="mx-auto max-w-3xl">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-ember-500">
-        {ROLE_LABELS[role]}
-      </p>
-      <h1 className="page-title mt-1">
-        {profile?.full_name ? `Hola, ${profile.full_name}` : 'Bienvenido'}
-      </h1>
-      <p className="mt-1 text-cream-500">¿Qué haremos hoy?</p>
+  const today = new Date().toLocaleDateString('es-PE', {
+    timeZone: 'America/Lima',
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  })
+  const todayLabel = today.charAt(0).toUpperCase() + today.slice(1)
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+  return (
+    <div className="mx-auto max-w-4xl">
+      {/* Hero */}
+      <section className="relative overflow-hidden rounded-3xl border border-ink-700 bg-gradient-to-br from-ink-900 via-ink-900 to-ink-850 p-6 shadow-card sm:p-8">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_60%_at_85%_0%,rgba(245,158,11,0.10),transparent)]" />
+        <div className="relative">
+          <p className="eyebrow">{ROLE_LABELS[role]}</p>
+          <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight text-cream-50 sm:text-4xl">
+            {profile?.full_name ? `Hola, ${profile.full_name}` : 'Bienvenido'}
+          </h1>
+          <p className="mt-2 text-sm capitalize text-cream-400 sm:text-base">
+            {todayLabel} · ¿Qué haremos hoy?
+          </p>
+        </div>
+      </section>
+
+      {/* Accesos rápidos */}
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {(links[role] ?? []).map(({ href, label, desc, Icon }) => (
           <Link
             key={href}
             href={href}
-            className="group card flex items-start gap-4 p-4 transition hover:border-ember-500/60 hover:bg-ink-800"
+            className="card-interactive group flex items-center gap-4 p-4"
           >
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500/50 group-hover:bg-ember-500/10">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500/50 group-hover:bg-ember-500/10">
               <Icon className="h-5 w-5" />
             </span>
-            <span>
+            <span className="min-w-0 flex-1">
               <span className="font-display block text-lg font-semibold text-cream-50">
                 {label}
               </span>
               <span className="mt-0.5 block text-sm text-cream-500">{desc}</span>
             </span>
+            <ChevronRightIcon className="h-4 w-4 shrink-0 text-cream-500 transition group-hover:translate-x-0.5 group-hover:text-ember-400" />
           </Link>
         ))}
       </div>

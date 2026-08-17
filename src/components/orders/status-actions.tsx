@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { CheckIcon } from '@/components/ui/icons'
 
 type Status = 'pendiente' | 'en_cocina' | 'listo' | 'entregado' | 'cobrado'
 
@@ -22,11 +23,17 @@ export default function StatusActions({ orderId, status }: { orderId: string; st
     if (!error) router.refresh()
   }
 
+  if (next.to === 'cobrado') {
+    return (
+      <button onClick={handle} className="btn-primary px-4 py-2 text-sm">
+        Cobrar
+      </button>
+    )
+  }
+
   return (
-    <button
-      onClick={handle}
-      className={next.to === 'cobrado' ? 'btn-primary px-3 py-1.5' : 'btn-emerald px-3 py-1.5'}
-    >
+    <button onClick={handle} className="btn-emerald px-4 py-2 text-sm">
+      <CheckIcon className="h-4 w-4" />
       {next.label}
     </button>
   )

@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import MonthPicker from '@/components/reports/month-picker'
-import { ChartIcon } from '@/components/ui/icons'
+import { ChartIcon, MoneyIcon, ReceiptIcon, TagIcon, TrendUpIcon } from '@/components/ui/icons'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,7 +14,7 @@ type Report = {
 }
 
 const TYPE_LABELS: Record<string, string> = {
-  mesa: 'Mesa',
+  mesa: 'En mesa',
   delivery: 'Delivery',
 }
 
@@ -39,7 +39,15 @@ export default async function ReportsPage({
 
   const supabase = await createClient()
 
-  const { data: profile } = await supabase.from('profiles').select('role').single()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user?.id ?? '')
+    .single()
   if (profile?.role !== 'admin') {
     redirect('/dashboard')
   }
@@ -56,39 +64,45 @@ export default async function ReportsPage({
   )
 
   if (error) {
-    return (
-      <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-400">
-        Error al cargar los reportes: {error.message}
-      </div>
-    )
+    return <div className="alert-error">Error al cargar los reportes: {error.message}</div>
   }
 
   const r = report as unknown as Report
   const maxWeek = Math.max(...(r.weeks ?? []).map((w) => w.revenue), 1)
+  const hasSales =
+    (r.weeks ?? []).length > 0 && (r.weeks ?? []).some((w) => w.revenue > 0)
 
   return (
     <div className="mx-auto max-w-3xl">
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-ember-500">
+          <p className="flex items-center gap-1.5 eyebrow">
             <ChartIcon className="h-4 w-4" /> Reportes
           </p>
           <h1 className="page-title mt-1">{monthLabel}</h1>
+          <p className="mt-1 text-sm text-cream-500">Resumen de ventas del mes.</p>
         </div>
         <MonthPicker value={month} />
       </div>
 
       {/* Resumen del mes */}
-      <div className="mb-6 grid gap-4 sm:grid-cols-2">
-        <div className="card p-5">
-          <p className="text-sm text-cream-500">Ventas del mes</p>
-          <p className="font-display mt-1 text-3xl font-semibold tabular-nums text-ember-400 sm:text-4xl">
-            S/{Number(r.total.revenue).toFixed(2)}
-          </p>
+      <div className="mb-6 grid gap-3 sm:grid-cols-2">
+        <div className="card relative overflow-hidden p-5">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_80%_at_100%_0%,rgba(245,158,11,0.12),transparent)]" />
+          <div className="relative">
+            <p className="flex items-center gap-1.5 text-sm text-cream-500">
+              <MoneyIcon className="h-4 w-4" /> Ventas del mes
+            </p>
+            <p className="font-display mt-2 text-3xl font-semibold tabular-nums text-ember-400 sm:text-4xl">
+              S/{Number(r.total.revenue).toFixed(2)}
+            </p>
+          </div>
         </div>
         <div className="card p-5">
-          <p className="text-sm text-cream-500">Órdenes cobradas</p>
-          <p className="font-display mt-1 text-3xl font-semibold tabular-nums text-cream-50 sm:text-4xl">
+          <p className="flex items-center gap-1.5 text-sm text-cream-500">
+            <ReceiptIcon className="h-4 w-4" /> Órdenes cobradas
+          </p>
+          <p className="font-display mt-2 text-3xl font-semibold tabular-nums text-cream-50 sm:text-4xl">
             {r.total.count}
           </p>
         </div>
@@ -96,11 +110,14 @@ export default async function ReportsPage({
 
       {/* Por semana */}
       <section className="card mb-6 p-5">
-        <h2 className="section-title mb-4">Ventas por semana</h2>
-        {(r.weeks ?? []).length === 0 || (r.weeks ?? []).every((w) => w.revenue === 0) ? (
-          <p className="text-sm text-cream-500">Sin ventas en este mes.</p>
+        <h2 className="section-title mb-1 flex items-center gap-2">
+          <TrendUpIcon className="h-4 w-4 text-ember-500" />
+          Ventas por semana
+        </h2>
+        {!hasSales ? (
+          <p className="mt-3 text-sm text-cream-500">Sin ventas en este mes.</p>
         ) : (
-          <ul className="space-y-4">
+          <ul className="mt-5 space-y-4">
             {r.weeks.map((w) => {
               const pct = Math.round((w.revenue / maxWeek) * 100)
               return (
@@ -136,14 +153,19 @@ export default async function ReportsPage({
 
       {/* Por tipo */}
       <section className="card mb-6 p-5">
-        <h2 className="section-title mb-4">Por tipo de pedido</h2>
+        <h2 className="section-title mb-1">Por tipo de pedido</h2>
         {Object.keys(r.by_type ?? {}).length === 0 ? (
-          <p className="text-sm text-cream-500">Sin ventas en este mes.</p>
+          <p className="mt-3 text-sm text-cream-500">Sin ventas en este mes.</p>
         ) : (
-          <ul className="space-y-2.5">
+          <ul className="mt-4 space-y-2.5">
             {Object.entries(r.by_type).map(([type, data]) => (
-              <li key={type} className="flex items-center justify-between text-sm">
-                <span className="text-cream-300">{TYPE_LABELS[type] ?? type}</span>
+              <li
+                key={type}
+                className="flex items-center justify-between rounded-xl border border-ink-800 bg-ink-950/60 px-3.5 py-2.5 text-sm"
+              >
+                <span className="font-medium text-cream-300">
+                  {TYPE_LABELS[type] ?? type}
+                </span>
                 <span className="text-cream-500">
                   {data.count} {data.count === 1 ? 'orden' : 'órdenes'} ·{' '}
                   <span className="font-mono font-semibold tabular-nums text-ember-400">
@@ -158,18 +180,26 @@ export default async function ReportsPage({
 
       {/* Top platillos */}
       <section className="card p-5">
-        <h2 className="section-title mb-4">Platillos más vendidos</h2>
+        <h2 className="section-title mb-1 flex items-center gap-2">
+          <TagIcon className="h-4 w-4 text-ember-500" />
+          Platillos más vendidos
+        </h2>
         {(r.top_items ?? []).length === 0 ? (
-          <p className="text-sm text-cream-500">Sin ventas en este mes.</p>
+          <p className="mt-3 text-sm text-cream-500">Sin ventas en este mes.</p>
         ) : (
-          <ul className="space-y-2.5">
+          <ul className="mt-4 space-y-2.5">
             {r.top_items.map((item, i) => (
-              <li key={item.name} className="flex items-center justify-between text-sm">
-                <span className="flex items-center gap-3 text-cream-200">
-                  <span className="font-display w-5 text-ember-500">{i + 1}</span>
-                  {item.name}
+              <li
+                key={item.name}
+                className="flex items-center justify-between gap-3 text-sm"
+              >
+                <span className="flex min-w-0 items-center gap-3 text-cream-200">
+                  <span className="font-display flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-ink-700 bg-ink-800 text-xs font-semibold text-ember-500">
+                    {i + 1}
+                  </span>
+                  <span className="truncate">{item.name}</span>
                 </span>
-                <span className="text-cream-500">
+                <span className="shrink-0 text-cream-500">
                   {item.quantity} unid. ·{' '}
                   <span className="font-mono font-semibold tabular-nums text-ember-400">
                     S/{Number(item.revenue).toFixed(2)}
