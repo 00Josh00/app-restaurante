@@ -187,7 +187,7 @@ export default function NewOrderPage() {
             )}
 
             {/* Chips de categoría (móvil/tablet) */}
-            <div className="sticky top-14 z-30 -mx-4 mb-3 bg-ink-950/95 px-4 py-1 backdrop-blur md:hidden">
+            <div className="sticky top-14 z-30 mb-3 bg-ink-950/95 px-3 py-1 backdrop-blur md:hidden">
               <div className="flex gap-2 overflow-x-auto pb-0.5">
                 {itemsByCategory
                   .filter(({ items }) => items.length > 0)
