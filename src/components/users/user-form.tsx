@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Modal from '@/components/ui/modal'
-import { PlusIcon } from '@/components/ui/icons'
 
 const ROLES = [
   { value: 'waiter', label: 'Mesero' },
@@ -51,7 +50,6 @@ export default function UserForm() {
   return (
     <>
       <button onClick={() => setOpen(true)} className="btn-primary">
-        <PlusIcon className="h-4 w-4" />
         Nuevo usuario
       </button>
 

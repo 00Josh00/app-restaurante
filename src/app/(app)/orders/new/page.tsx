@@ -375,8 +375,7 @@ export default function NewOrderPage() {
           onClick={() => setShowSheet(true)}
           className="btn-primary mx-auto flex w-full max-w-md items-center justify-between px-4 py-3"
         >
-          <span className="flex items-center gap-2 text-sm font-semibold">
-            <ShoppingBagIcon className="h-4 w-4" />
+          <span className="text-sm font-semibold">
             Ver pedido · {cart.length} {cart.length === 1 ? 'plato' : 'platos'}
           </span>
           <span className="font-display text-lg font-semibold tabular-nums">S/{total.toFixed(2)}</span>

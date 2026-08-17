@@ -3,7 +3,6 @@ import { createClient } from '@/lib/supabase/server'
 import {
   BookIcon,
   ChartIcon,
-  ChevronRightIcon,
   ClipboardIcon,
   ListIcon,
   UsersIcon,
@@ -85,16 +84,13 @@ export default async function DashboardPage() {
             href={href}
             className="card-interactive group flex items-center gap-4 p-4"
           >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500/50 group-hover:bg-ember-500/10">
-              <Icon className="h-5 w-5" />
-            </span>
+            <Icon className="h-5 w-5 shrink-0 text-ember-400" />
             <span className="min-w-0 flex-1">
               <span className="font-display block text-lg font-semibold text-cream-50">
                 {label}
               </span>
               <span className="mt-0.5 block text-sm text-cream-500">{desc}</span>
             </span>
-            <ChevronRightIcon className="h-4 w-4 shrink-0 text-cream-500 transition group-hover:translate-x-0.5 group-hover:text-ember-400" />
           </Link>
         ))}
       </div>

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { STATUS_ACCENT, STATUS_BADGE, STATUS_LABELS, type OrderStatus } from '@/lib/order-status'
-import { BellIcon, CheckIcon, ClockIcon, PlayIcon, UtensilsIcon } from '@/components/ui/icons'
+import { BellIcon, ClockIcon, UtensilsIcon } from '@/components/ui/icons'
 
 type OrderItem = { id: string; name: string; quantity: number }
 type Order = {
@@ -251,7 +251,6 @@ export default function KitchenPage() {
                         onClick={() => updateStatus(order.id, 'en_cocina')}
                         className="btn-primary flex-1 py-2.5"
                       >
-                        <PlayIcon className="h-4 w-4" />
                         Empezar
                       </button>
                     )}
@@ -260,7 +259,6 @@ export default function KitchenPage() {
                         onClick={() => updateStatus(order.id, 'listo')}
                         className="btn-emerald flex-1 py-2.5"
                       >
-                        <CheckIcon className="h-4 w-4" />
                         Listo
                       </button>
                     )}

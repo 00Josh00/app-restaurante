@@ -1,6 +1,6 @@
 'use client'
 
-import { MinusIcon, PlusIcon, SendIcon } from '@/components/ui/icons'
+import { MinusIcon, PlusIcon } from '@/components/ui/icons'
 import type { MenuItem } from '@/app/(app)/orders/new/page'
 
 type CartItem = { item: MenuItem; quantity: number }
@@ -111,7 +111,6 @@ export default function CartPanel({
         disabled={loading || cart.length === 0}
         className="btn-primary w-full py-3"
       >
-        <SendIcon className="h-4 w-4" />
         {loading ? 'Enviando…' : 'Enviar a cocina'}
       </button>
     </>

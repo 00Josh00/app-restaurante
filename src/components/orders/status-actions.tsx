@@ -1,18 +1,22 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { CheckIcon } from '@/components/ui/icons'
+import type { OrderStatus } from '@/lib/order-status'
 
-type Status = 'pendiente' | 'en_cocina' | 'listo' | 'entregado' | 'cobrado'
-
-const NEXT: Partial<Record<Status, { label: string; to: Status }>> = {
+const NEXT: Partial<Record<OrderStatus, { label: string; to: OrderStatus }>> = {
   listo: { label: 'Entregar', to: 'entregado' },
   entregado: { label: 'Cobrar', to: 'cobrado' },
 }
 
-export default function StatusActions({ orderId, status }: { orderId: string; status: Status }) {
-  const router = useRouter()
+export default function StatusActions({
+  orderId,
+  status,
+  onChange,
+}: {
+  orderId: string
+  status: OrderStatus
+  onChange?: () => void
+}) {
   const next = NEXT[status]
 
   if (!next) return null
@@ -20,7 +24,7 @@ export default function StatusActions({ orderId, status }: { orderId: string; st
   const handle = async () => {
     const supabase = createClient()
     const { error } = await supabase.from('orders').update({ status: next.to }).eq('id', orderId)
-    if (!error) router.refresh()
+    if (!error) onChange?.()
   }
 
   if (next.to === 'cobrado') {
@@ -33,7 +37,6 @@ export default function StatusActions({ orderId, status }: { orderId: string; st
 
   return (
     <button onClick={handle} className="btn-emerald px-4 py-2 text-sm">
-      <CheckIcon className="h-4 w-4" />
       {next.label}
     </button>
   )

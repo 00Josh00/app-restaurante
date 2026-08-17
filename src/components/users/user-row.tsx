@@ -105,8 +105,9 @@ export default function UserRow({
       <button
         onClick={() => setConfirmOpen(true)}
         disabled={isSelf}
-        className="btn-danger px-2.5 py-1.5 disabled:opacity-30"
+        className="btn-ghost-icon text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 disabled:opacity-30"
         title="Eliminar"
+        aria-label="Eliminar usuario"
       >
         <TrashIcon className="h-4 w-4" />
       </button>

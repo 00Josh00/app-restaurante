@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Modal from '@/components/ui/modal'
-import { PencilIcon, PlusIcon } from '@/components/ui/icons'
+import { PencilIcon } from '@/components/ui/icons'
 
 export default function CategoryForm({ existing }: { existing?: { id: string; name: string } }) {
   const [open, setOpen] = useState(false)
@@ -38,19 +38,11 @@ export default function CategoryForm({ existing }: { existing?: { id: string; na
     <>
       <button
         onClick={() => setOpen(true)}
-        className={existing ? 'btn-ghost px-3 py-1.5' : 'btn-primary'}
+        className={existing ? 'btn-ghost-icon' : 'btn-primary'}
+        title={existing ? 'Editar categoría' : undefined}
+        aria-label={existing ? 'Editar categoría' : 'Nueva categoría'}
       >
-        {existing ? (
-          <>
-            <PencilIcon className="h-4 w-4" />
-            Editar
-          </>
-        ) : (
-          <>
-            <PlusIcon className="h-4 w-4" />
-            Nueva categoría
-          </>
-        )}
+        {existing ? <PencilIcon className="h-4 w-4" /> : 'Nueva categoría'}
       </button>
 
       <Modal open={open} onClose={() => setOpen(false)} title={existing ? 'Editar categoría' : 'Nueva categoría'}>

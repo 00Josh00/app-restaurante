@@ -1,9 +1,8 @@
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import CategoryForm from '@/components/menu/category-form'
 import ItemForm from '@/components/menu/item-form'
 import DeleteButton from '@/components/menu/delete-button'
-import { ArrowLeftIcon, BookIcon } from '@/components/ui/icons'
+import { BookIcon } from '@/components/ui/icons'
 
 export const dynamic = 'force-dynamic'
 
@@ -56,14 +55,13 @@ export default async function MenuPage() {
               <section key={category.id}>
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="h-px w-8 bg-ember-500/60" />
                     <h2 className="font-display text-xl font-semibold tracking-tight text-cream-50">
                       {category.name}
                     </h2>
                     <span className="badge-neutral">{categoryItems.length}</span>
                   </div>
                   {isAdmin && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                       <ItemForm categoryId={category.id} />
                       <CategoryForm existing={{ id: category.id, name: category.name }} />
                       <DeleteButton table="categories" id={category.id} label="Eliminar categoría" />
@@ -99,7 +97,7 @@ export default async function MenuPage() {
                           </p>
                         </div>
                         {isAdmin && (
-                          <div className="flex shrink-0 flex-col items-center gap-1.5">
+                          <div className="flex shrink-0 flex-col items-center gap-1">
                             <ItemForm categoryId={category.id} item={item} />
                             <DeleteButton table="menu_items" id={item.id} label="Eliminar" />
                           </div>
@@ -113,14 +111,6 @@ export default async function MenuPage() {
           })}
         </div>
       )}
-
-      <Link
-        href="/orders/new"
-        className="mt-10 inline-flex items-center gap-1.5 text-sm text-cream-400 underline-offset-4 transition hover:text-ember-400 hover:underline"
-      >
-        <ArrowLeftIcon className="h-4 w-4" />
-        Crear un pedido
-      </Link>
     </div>
   )
 }

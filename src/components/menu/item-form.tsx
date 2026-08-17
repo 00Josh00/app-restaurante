@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import Modal from '@/components/ui/modal'
-import { PencilIcon, PlusIcon } from '@/components/ui/icons'
+import { PencilIcon } from '@/components/ui/icons'
 
 type Item = {
   id: string
@@ -66,19 +66,11 @@ export default function ItemForm({ categoryId, item }: { categoryId: string; ite
     <>
       <button
         onClick={() => setOpen(true)}
-        className={item ? 'btn-ghost px-3 py-1.5' : 'btn-primary'}
+        className={item ? 'btn-ghost-icon' : 'btn-ghost px-3 py-1.5'}
+        title={item ? 'Editar' : undefined}
+        aria-label={item ? 'Editar platillo' : 'Agregar platillo'}
       >
-        {item ? (
-          <>
-            <PencilIcon className="h-4 w-4" />
-            Editar
-          </>
-        ) : (
-          <>
-            <PlusIcon className="h-4 w-4" />
-            Agregar platillo
-          </>
-        )}
+        {item ? <PencilIcon className="h-4 w-4" /> : 'Agregar platillo'}
       </button>
 
       <Modal

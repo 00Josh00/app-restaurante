@@ -38,8 +38,9 @@ export default function DeleteButton({
     <>
       <button
         onClick={() => setOpen(true)}
-        className="btn-danger px-2.5 py-1.5"
+        className="btn-ghost-icon text-rose-400 hover:bg-rose-500/10 hover:text-rose-300"
         title={label}
+        aria-label={label}
       >
         <TrashIcon className="h-4 w-4" />
       </button>
