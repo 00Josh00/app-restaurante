@@ -88,7 +88,6 @@ export default async function ReportsPage({
       {/* Resumen del mes */}
       <div className="mb-6 grid gap-3 sm:grid-cols-2">
         <div className="card relative overflow-hidden p-5">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(80%_80%_at_100%_0%,rgba(245,158,11,0.12),transparent)]" />
           <div className="relative">
             <p className="flex items-center gap-1.5 text-sm text-cream-500">
               <MoneyIcon className="h-4 w-4" /> Ventas del mes
@@ -136,7 +135,7 @@ export default async function ReportsPage({
                   <div className="mt-1.5 flex items-center gap-3">
                     <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-ink-800">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-ember-600 to-ember-400 transition-all"
+                        className="h-full rounded-full bg-ember-500 transition-all"
                         style={{ width: `${w.revenue > 0 ? Math.max(pct, 4) : 0}%` }}
                       />
                     </div>

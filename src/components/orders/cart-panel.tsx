@@ -30,7 +30,7 @@ export default function CartPanel({
   total: number
   subtotal: number
   orderType: 'mesa' | 'delivery'
-  deliveryFee: number
+  deliveryFee: number | null
 }) {
   return (
     <>
@@ -83,7 +83,9 @@ export default function CartPanel({
         {orderType === 'delivery' && (
           <div className="flex items-center justify-between text-sm">
             <span className="text-cream-400">Delivery</span>
-            <span className="font-mono tabular-nums text-cream-200">S/{deliveryFee.toFixed(2)}</span>
+            <span className="font-mono tabular-nums text-cream-200">
+              {deliveryFee != null ? `S/${deliveryFee.toFixed(2)}` : '—'}
+            </span>
           </div>
         )}
         <div className="flex items-end justify-between pt-1.5">

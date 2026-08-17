@@ -3,7 +3,6 @@ import { LogoMark, WifiOffIcon } from '@/components/ui/icons'
 export default function OfflinePage() {
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-ink-950 p-6 text-center">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_40%_at_50%_-10%,rgba(245,158,11,0.08),transparent)]" />
       <div className="relative flex flex-col items-center">
         <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-ember-500/30 bg-ember-500/10 text-ember-400">
           <LogoMark className="h-7 w-7" />

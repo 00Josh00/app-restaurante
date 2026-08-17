@@ -38,7 +38,7 @@ export default function Modal({
       aria-modal="true"
     >
       <div
-        className="max-h-[90vh] w-full max-w-md animate-slide-up overflow-y-auto rounded-t-3xl border border-ink-700 bg-ink-900 p-6 shadow-lifted sm:rounded-3xl"
+        className="max-h-[90vh] w-full max-w-md animate-slide-up overflow-y-auto rounded-t-2xl border border-ink-800 bg-ink-900 p-6 sm:rounded-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex items-center justify-between">

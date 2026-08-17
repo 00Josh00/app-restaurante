@@ -67,14 +67,10 @@ export default function LoginPage() {
 
   return (
     <main className="relative flex min-h-screen overflow-hidden bg-ink-950">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_50%_at_50%_-10%,rgba(245,158,11,0.12),transparent)]" />
-
       {/* Panel de marca (desktop) */}
       <aside className="relative hidden w-1/2 flex-col justify-between border-r border-ink-800 p-12 lg:flex">
         <div className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-2xl border border-ember-500/30 bg-ember-500/10 text-ember-400">
-            <LogoMark className="h-6 w-6" />
-          </span>
+          <LogoMark className="h-7 w-7 text-ember-400" />
           <div className="leading-tight">
             <p className="font-display text-2xl font-semibold tracking-tight text-cream-50">
               Kleta
@@ -113,9 +109,7 @@ export default function LoginPage() {
       <div className="relative flex flex-1 items-center justify-center p-6">
         <div className="w-full max-w-sm">
           <div className="mb-8 flex flex-col items-center text-center lg:hidden">
-            <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-ember-500/30 bg-ember-500/10 text-ember-400">
-              <LogoMark className="h-7 w-7" />
-            </span>
+            <LogoMark className="h-10 w-10 text-ember-400" />
             <h1 className="font-display mt-4 text-3xl font-semibold tracking-tight text-cream-50">
               Kleta
             </h1>

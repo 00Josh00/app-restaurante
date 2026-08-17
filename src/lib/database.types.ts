@@ -288,9 +288,18 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      get_delivery_fee: { Args: never; Returns: number }
       get_my_role: {
         Args: never
         Returns: Database["public"]["Enums"]["app_role"]
+      }
+      get_orders: {
+        Args: {
+          p_limit?: number
+          p_offset?: number
+          p_status?: Database["public"]["Enums"]["order_status"] | null
+        }
+        Returns: Json
       }
       get_reports: { Args: never; Returns: Json }
       get_reports_month: {

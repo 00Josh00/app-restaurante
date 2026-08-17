@@ -64,9 +64,7 @@ export default function AppNav({
     <header className="sticky top-0 z-40 border-b border-ink-800 bg-ink-950/85 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-2.5 sm:px-6">
         <Link href="/dashboard" className="group flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-ember-500/30 bg-ember-500/10 text-ember-400 transition group-hover:border-ember-500/60 group-hover:bg-ember-500/15">
-            <LogoMark className="h-5 w-5" />
-          </span>
+          <LogoMark className="h-6 w-6 text-ember-400 transition group-hover:text-ember-300" />
           <span className="flex flex-col leading-none">
             <span className="font-display text-lg font-semibold tracking-tight text-cream-50">
               Kleta

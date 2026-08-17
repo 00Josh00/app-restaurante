@@ -65,8 +65,7 @@ export default async function DashboardPage() {
   return (
     <div className="mx-auto max-w-4xl">
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-3xl border border-ink-700 bg-gradient-to-br from-ink-900 via-ink-900 to-ink-850 p-6 shadow-card sm:p-8">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_60%_at_85%_0%,rgba(245,158,11,0.10),transparent)]" />
+      <section className="relative overflow-hidden rounded-xl border border-ink-800 bg-ink-900 p-6 sm:p-8">
         <div className="relative">
           <p className="eyebrow">{ROLE_LABELS[role]}</p>
           <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight text-cream-50 sm:text-4xl">

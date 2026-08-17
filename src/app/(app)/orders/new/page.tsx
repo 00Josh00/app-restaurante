@@ -26,8 +26,6 @@ type Table = { id: string; label: string }
 
 type CartItem = { item: MenuItem; quantity: number }
 
-const DEFAULT_DELIVERY_FEE = 5
-
 export default function NewOrderPage() {
   const router = useRouter()
 
@@ -44,7 +42,7 @@ export default function NewOrderPage() {
   const [dataError, setDataError] = useState<string | null>(null)
   const [showSheet, setShowSheet] = useState(false)
   const [query, setQuery] = useState('')
-  const [deliveryFee, setDeliveryFee] = useState(DEFAULT_DELIVERY_FEE)
+  const [deliveryFee, setDeliveryFee] = useState<number | null>(null)
 
   useEffect(() => {
     const supabase = createClient()
@@ -53,8 +51,8 @@ export default function NewOrderPage() {
       supabase.from('categories').select('id, name').order('sort_order', { ascending: true }),
       supabase.from('menu_items').select('id, category_id, name, price, available'),
       supabase.from('tables').select('id, label').order('label'),
-      supabase.from('settings').select('value').eq('key', 'delivery_fee').maybeSingle(),
-    ]).then(([cats, its, tabs, settings]) => {
+      supabase.rpc('get_delivery_fee'),
+    ]).then(([cats, its, tabs, fee]) => {
       if (cats.error || its.error || tabs.error) {
         setDataError('Error al cargar el menú')
         return
@@ -62,7 +60,7 @@ export default function NewOrderPage() {
       setCategories(cats.data ?? [])
       setItems(its.data ?? [])
       setTables(tabs.data ?? [])
-      if (settings.data?.value != null) setDeliveryFee(Number(settings.data.value))
+      if (fee.data != null) setDeliveryFee(Number(fee.data))
       if (tabs.data?.[0]) setTableId(tabs.data[0].id)
     })
   }, [])
@@ -87,7 +85,7 @@ export default function NewOrderPage() {
     [cart]
   )
 
-  const total = subtotal + (orderType === 'delivery' ? deliveryFee : 0)
+  const total = subtotal + (orderType === 'delivery' ? (deliveryFee ?? 0) : 0)
 
   const addToCart = (item: MenuItem) => {
     setCart((prev) => {
@@ -177,7 +175,7 @@ export default function NewOrderPage() {
                   onClick={() => setOrderType(type)}
                   className={`flex h-11 items-center justify-center gap-2 rounded-xl text-sm font-medium transition active:scale-[0.98] ${
                     orderType === type
-                      ? 'bg-ember-500 text-ink-950 shadow-[inset_0_1px_0_rgb(255_255_255/0.25)]'
+                      ? 'bg-ember-500 text-ink-950'
                       : 'text-cream-300 hover:text-cream-100'
                   }`}
                 >
@@ -280,7 +278,7 @@ export default function NewOrderPage() {
                             <li key={item.id}>
                               <button
                                 onClick={() => addToCart(item)}
-                                className="group flex w-full items-center justify-between gap-2 rounded-xl border border-ink-700 bg-ink-900 p-2.5 text-left shadow-card transition hover:border-ember-500/60 hover:bg-ink-800 active:scale-[0.99]"
+                                className="group flex w-full items-center justify-between gap-2 rounded-xl border border-ink-700 bg-ink-900 p-2.5 text-left transition hover:border-ember-500/60 hover:bg-ink-800 active:scale-[0.99]"
                               >
                                 <span className="min-w-0">
                                   <span className="block truncate text-sm font-medium text-cream-100">
@@ -299,7 +297,7 @@ export default function NewOrderPage() {
                         }
                         return (
                           <li key={item.id}>
-                            <div className="flex w-full items-center justify-between gap-2 rounded-xl border border-ember-500/40 bg-ember-500/[0.07] p-2.5 shadow-card">
+                            <div className="flex w-full items-center justify-between gap-2 rounded-xl border border-ember-500/40 bg-ember-500/[0.07] p-2.5">
                               <span className="min-w-0">
                                 <span className="block truncate text-sm font-medium text-cream-100">
                                   {item.name}
@@ -390,7 +388,7 @@ export default function NewOrderPage() {
         <div className="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowSheet(false)} />
           <div
-            className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-3xl border-t border-ink-700 bg-ink-900 shadow-lifted"
+            className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-ink-800 bg-ink-900"
             style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
           >
             <div className="sticky top-0 flex items-center justify-between border-b border-ink-800 bg-ink-900 px-4 py-3">

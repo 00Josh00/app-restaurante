@@ -1,22 +1,32 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
 import StatusActions from '@/components/orders/status-actions'
 import { ListIcon } from '@/components/ui/icons'
 import { STATUS_ACCENT, STATUS_BADGE, STATUS_LABELS, type OrderStatus } from '@/lib/order-status'
 
 type OrderItem = { id: string; name: string; quantity: number }
 
-type Order = {
+export type Order = {
   id: string
   type: 'mesa' | 'delivery'
   table_id: string | null
+  table_label: string | null
   customer_name: string | null
   note: string | null
   status: OrderStatus
   total: number
   created_at: string
+  time_label: string
   order_items?: OrderItem[]
+}
+
+export type OrdersResult = {
+  orders: Order[]
+  counts: Record<string, number>
+  total: number
 }
 
 const FILTERS: { key: OrderStatus | 'todos'; label: string }[] = [
@@ -27,6 +37,8 @@ const FILTERS: { key: OrderStatus | 'todos'; label: string }[] = [
   { key: 'entregado', label: 'Entregadas' },
   { key: 'cobrado', label: 'Cobradas' },
 ]
+
+const PAGE_SIZE = 50
 
 const fmtTime = (iso: string) =>
   new Date(iso).toLocaleString('es-PE', {
@@ -40,81 +52,113 @@ const fmtTime = (iso: string) =>
 
 export default function OrderList({
   orders,
-  tableMap,
+  counts,
+  total,
+  status,
+  page,
 }: {
   orders: Order[]
-  tableMap: Record<string, string>
+  counts: Record<string, number>
+  total: number
+  status: OrderStatus | null
+  page: number
 }) {
-  const [filter, setFilter] = useState<OrderStatus | 'todos'>('todos')
+  const [extra, setExtra] = useState<Order[]>([])
+  const [loading, setLoading] = useState(false)
 
-  const filtered = useMemo(
-    () => (filter === 'todos' ? orders : orders.filter((o) => o.status === filter)),
-    [orders, filter]
-  )
+  const [prevOrders, setPrevOrders] = useState(orders)
+  if (prevOrders !== orders) {
+    setPrevOrders(orders)
+    setExtra([])
+  }
 
-  const counts = useMemo(() => {
-    const c: Record<string, number> = { todos: orders.length }
-    for (const o of orders) c[o.status] = (c[o.status] ?? 0) + 1
-    return c
-  }, [orders])
+  const all = [...orders, ...extra]
+
+  const loadMore = async () => {
+    setLoading(true)
+    const supabase = createClient()
+    const { data: result } = await supabase.rpc('get_orders', {
+      p_status: status,
+      p_limit: PAGE_SIZE,
+      p_offset: (page - 1) * PAGE_SIZE + extra.length,
+    })
+    if (result) {
+      const parsed = result as OrdersResult
+      const next = (parsed.orders ?? []).map((o) => ({ ...o, time_label: fmtTime(o.created_at) }))
+      setExtra((prev) => [...prev, ...next])
+    }
+    setLoading(false)
+  }
+
+  const hrefFor = (key: OrderStatus | 'todos') =>
+    key === 'todos' ? '/orders' : `/orders?status=${key}`
+
+  const countFor = (key: OrderStatus | 'todos') => counts[key] ?? 0
 
   const label = (order: Order) =>
     order.type === 'mesa'
-      ? tableMap[order.table_id ?? ''] ?? 'Mesa'
+      ? order.table_label ?? 'Mesa'
       : `Delivery · ${order.customer_name ?? ''}`
 
   return (
     <>
-      <div className="sticky top-14 z-30 -mx-3 mb-4 border-y border-ink-800/80 bg-ink-950/95 px-3 py-2 backdrop-blur-md sm:-mx-6 sm:px-6">
+      <div className="sticky top-14 z-30 -mx-3 mb-4 border-b border-ink-800 bg-ink-950/95 px-3 py-2 backdrop-blur-md sm:-mx-6 sm:px-6">
         <div className="flex gap-2 overflow-x-auto">
-          {FILTERS.map(({ key, label: l }) => (
-            <button
-              key={key}
-              onClick={() => setFilter(key)}
-              className={`chip ${filter === key ? 'chip-active' : ''}`}
-            >
-              {l}
-              <span
-                className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
-                  filter === key ? 'bg-ember-500/20 text-ember-300' : 'bg-ink-800 text-cream-500'
-                }`}
+          {FILTERS.map(({ key, label: l }) => {
+            const active = (key === 'todos' && status === null) || key === status
+            return (
+              <Link
+                key={key}
+                href={hrefFor(key)}
+                className={`chip ${active ? 'chip-active' : ''}`}
               >
-                {counts[key] ?? 0}
-              </span>
-            </button>
-          ))}
+                {l}
+                <span
+                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
+                    active ? 'bg-ember-500/20 text-ember-300' : 'bg-ink-800 text-cream-500'
+                  }`}
+                >
+                  {countFor(key)}
+                </span>
+              </Link>
+            )
+          })}
         </div>
       </div>
 
-      {filtered.length === 0 ? (
+      {all.length === 0 ? (
         <div className="empty-state">
           <span className="flex h-12 w-12 items-center justify-center rounded-full border border-ink-700 bg-ink-800 text-cream-500">
             <ListIcon className="h-6 w-6" />
           </span>
           <div>
-            <p className="font-medium text-cream-200">Sin órdenes {filter !== 'todos' ? STATUS_LABELS[filter].toLowerCase() : ''}</p>
+            <p className="font-medium text-cream-200">
+              Sin órdenes {status ? STATUS_LABELS[status].toLowerCase() : ''}
+            </p>
             <p className="mt-1 text-sm text-cream-500">
-              {filter === 'todos' ? 'Aún no hay órdenes registradas.' : 'No hay órdenes en este estado.'}
+              {status
+                ? 'No hay órdenes en este estado.'
+                : 'Aún no hay órdenes registradas.'}
             </p>
           </div>
         </div>
       ) : (
-        <ul className="space-y-3">
-          {filtered.map((order) => (
+        <ul className="space-y-2">
+          {all.map((order) => (
             <li key={order.id} className="card overflow-hidden p-0">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink-800 px-4 py-3">
                 <div className="min-w-0">
-                  <p className="font-display truncate text-lg font-semibold text-cream-50">
+                  <p className="font-display truncate text-base font-semibold text-cream-50">
                     {label(order)}
                   </p>
-                  <p className="text-xs text-cream-500">{fmtTime(order.created_at)}</p>
+                  <p className="text-xs text-cream-500">{order.time_label}</p>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <span className={STATUS_BADGE[order.status]}>
                     <span className={`badge-dot ${STATUS_ACCENT[order.status]}`} />
                     {STATUS_LABELS[order.status]}
                   </span>
-                  <span className="font-mono text-base font-semibold tabular-nums text-ember-400">
+                  <span className="font-mono text-sm font-semibold tabular-nums text-ember-400">
                     S/{Number(order.total).toFixed(2)}
                   </span>
                 </div>
@@ -136,20 +180,21 @@ export default function OrderList({
                   <p className="text-sm text-cream-500">Sin detalle.</p>
                 )}
 
-                {order.note && (
-                  <p className="note-highlight mt-3">{order.note}</p>
-                )}
+                {order.note && <p className="note-highlight mt-3">{order.note}</p>}
 
                 <div className="mt-3 flex justify-end">
-                  <StatusActions
-                    orderId={order.id}
-                    status={order.status}
-                  />
+                  <StatusActions orderId={order.id} status={order.status} />
                 </div>
               </div>
             </li>
           ))}
         </ul>
+      )}
+
+      {!loading && all.length < total && (
+        <button onClick={loadMore} className="btn-ghost mx-auto mt-4 block px-6 py-2.5">
+          Cargar más
+        </button>
       )}
     </>
   )
