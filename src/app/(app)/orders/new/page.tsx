@@ -304,54 +304,54 @@ export default function NewOrderPage() {
                         const qty = cart.find((c) => c.item.id === item.id)?.quantity ?? 0
                         if (qty === 0) {
                           return (
-                            <li key={item.id}>
+                            <li key={item.id} className="min-w-0">
                               <button
                                 onClick={() => addToCart(item)}
-                                className="group flex w-full items-center justify-between gap-2 rounded-xl border border-ink-700 bg-ink-900 p-2.5 text-left transition hover:border-ember-500/60 hover:bg-ink-800 active:scale-[0.99]"
+                                className="group flex w-full items-center justify-between gap-1.5 rounded-lg border border-ink-700 bg-ink-900 p-2 text-left transition hover:border-ember-500/60 hover:bg-ink-800 active:scale-[0.99]"
                               >
                                 <span className="min-w-0">
-                                  <span className="block truncate text-sm font-medium text-cream-100">
+                                  <span className="block truncate text-[13px] font-medium leading-tight text-cream-100">
                                     {item.name}
                                   </span>
-                                  <span className="mt-0.5 block font-mono text-xs tabular-nums text-cream-500 transition group-hover:text-ember-400">
+                                  <span className="mt-0.5 block font-mono text-[11px] tabular-nums text-cream-500 transition group-hover:text-ember-400">
                                     S/{Number(item.price).toFixed(2)}
                                   </span>
                                 </span>
-                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500 group-hover:bg-ember-500 group-hover:text-ink-950">
-                                  <PlusIcon className="h-4 w-4" />
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500 group-hover:bg-ember-500 group-hover:text-ink-950">
+                                  <PlusIcon className="h-3.5 w-3.5" />
                                 </span>
                               </button>
                             </li>
                           )
                         }
                         return (
-                          <li key={item.id}>
-                            <div className="flex w-full items-center justify-between gap-2 rounded-xl border border-ember-500/40 bg-ember-500/[0.07] p-2.5">
+                          <li key={item.id} className="min-w-0">
+                            <div className="flex w-full items-center justify-between gap-1.5 rounded-lg border border-ember-500/40 bg-ember-500/[0.07] p-2">
                               <span className="min-w-0">
-                                <span className="block truncate text-sm font-medium text-cream-100">
+                                <span className="block truncate text-[13px] font-medium leading-tight text-cream-100">
                                   {item.name}
                                 </span>
-                                <span className="mt-0.5 block font-mono text-xs tabular-nums text-ember-400">
+                                <span className="mt-0.5 block font-mono text-[11px] tabular-nums text-ember-400">
                                   S/{Number(item.price).toFixed(2)}
                                 </span>
                               </span>
-                              <div className="flex shrink-0 items-center gap-1.5">
+                              <div className="flex shrink-0 items-center gap-1">
                                 <button
                                   onClick={() => removeFromCart(item.id)}
-                                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-ink-700 text-cream-300 transition hover:border-ink-600 hover:text-cream-100 active:scale-95"
+                                  className="flex h-6 w-6 items-center justify-center rounded-md border border-ink-700 text-cream-300 transition hover:border-ink-600 hover:text-cream-100 active:scale-95"
                                   aria-label={`Quitar ${item.name}`}
                                 >
-                                  <MinusIcon className="h-3.5 w-3.5" />
+                                  <MinusIcon className="h-3 w-3" />
                                 </button>
-                                <span className="w-5 text-center font-mono text-sm font-semibold tabular-nums text-cream-100">
+                                <span className="w-4 text-center font-mono text-xs font-semibold tabular-nums text-cream-100">
                                   {qty}
                                 </span>
                                 <button
                                   onClick={() => addToCart(item)}
-                                  className="flex h-7 w-7 items-center justify-center rounded-lg border border-ember-500/50 bg-ember-500 text-ink-950 transition hover:bg-ember-400 active:scale-95"
+                                  className="flex h-6 w-6 items-center justify-center rounded-md border border-ember-500/50 bg-ember-500 text-ink-950 transition hover:bg-ember-400 active:scale-95"
                                   aria-label={`Agregar ${item.name}`}
                                 >
-                                  <PlusIcon className="h-3.5 w-3.5" />
+                                  <PlusIcon className="h-3 w-3" />
                                 </button>
                               </div>
                             </div>

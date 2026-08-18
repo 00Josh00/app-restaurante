@@ -46,6 +46,12 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
+  // Explicitamos escala 1:1 y bloqueamos el zoom en la PWA para evitar que
+  // las tarjetas se vean a ancho completo (escalado raro en Android/OPPO).
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   themeColor: "#0b0908",
 };
 
