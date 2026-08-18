@@ -60,9 +60,14 @@ Si necesitas un estilo que no existe, añádelo como clase en globals.css (en
 - **Órdenes / Historial:** pestañas de filtro por estado (`chip` activo),
   tarjetas por orden con badge de estado, items en lista y monto con
   `font-mono tabular-nums`.
-- **Nuevo pedido:** selector de tipo (mesa/delivery) como segmento,
-  chips de categoría sticky en móvil, menú en grid, carrito en panel lateral
-  (desktop) / bottom sheet (móvil) con barra "Ver pedido" flotante.
+- **Nuevo pedido:** barra de control única y sticky (tipo mesa/delivery +
+  mesa/cliente + búsqueda + chips de categoría), menú en grid, carrito en
+  panel lateral (desktop) / bottom sheet (móvil) con pie fijo (total + nota +
+  enviar) y barra "Ver pedido" flotante.
+- **Grillas de producto (menú, platillos):** usar SIEMPRE
+  `grid-cols-[repeat(auto-fill,minmax(170px,1fr))]` — columnas de ~170-200px
+  que se adaptan a cualquier ancho de viewport (una tarjeta nunca ocupa toda
+  la pantalla en la PWA). Nunca grillas fijas de columnas en menús.
 - **Cocina:** tarjetas grandes por orden con barra de estado superior,
   hora de ingreso, lista de items con cantidades, nota resaltada en ámbar y
   botones de avance de estado. Nuevas órdenes hacen pulso `ring-ember` + beep.

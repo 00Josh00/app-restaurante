@@ -13,10 +13,12 @@ import {
   ShoppingBagIcon,
   TableIcon,
 } from '@/components/ui/icons'
-import CartPanel from '@/components/orders/cart-panel'
+import { CartFooter, CartItems } from '@/components/orders/cart-panel'
 
 type Category = { id: string; name: string }
 type Table = { id: string; label: string }
+
+const soles = (n: number) => `S/${n.toFixed(2)}`
 
 export default function NewOrderPage() {
   const router = useRouter()
@@ -30,7 +32,7 @@ export default function NewOrderPage() {
   const [note, setNote] = useState('')
   const [cart, setCart] = useState<CartItem[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [dataError, setDataError] = useState<string | null>(null)
   const [showSheet, setShowSheet] = useState(false)
   const [query, setQuery] = useState('')
@@ -60,6 +62,7 @@ export default function NewOrderPage() {
       supabase.from('tables').select('id, label').order('label'),
       supabase.rpc('get_delivery_fee'),
     ]).then(([cats, its, tabs, fee]) => {
+      setLoading(false)
       if (cats.error || its.error || tabs.error) {
         setDataError('Error al cargar el menú')
         return
@@ -157,7 +160,8 @@ export default function NewOrderPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-5xl overflow-x-hidden">
+      {/* Header */}
       <div className="mb-3 flex items-center justify-between gap-3">
         <h1 className="page-title">Nuevo pedido</h1>
         <span className="badge-neutral">
@@ -170,59 +174,64 @@ export default function NewOrderPage() {
         <div className="alert-error">{dataError}</div>
       ) : (
         <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-          <div>
-            {/* Tipo + mesa/nombre en una fila */}
-            <div className="mb-2 flex gap-2">
-              <div className="grid grid-cols-2 gap-1 rounded-xl border border-ink-800 bg-ink-900/60 p-0.5">
-                {(
-                  [
-                    { type: 'mesa', label: 'Mesa', Icon: TableIcon },
-                    { type: 'delivery', label: 'Delivery', Icon: BikeIcon },
-                  ] as const
-                ).map(({ type, label, Icon }) => (
-                  <button
-                    key={type}
-                    onClick={() => setOrderType(type)}
-                    className={`flex h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium transition active:scale-[0.98] ${
-                      orderType === type
-                        ? 'bg-ember-500 text-ink-950'
-                        : 'text-cream-300 hover:text-cream-100'
-                    }`}
-                  >
-                    <Icon className="h-3.5 w-3.5" />
-                    {label}
-                  </button>
-                ))}
-              </div>
-              {orderType === 'mesa' ? (
-                <select value={tableId} onChange={(e) => setTableId(e.target.value)} className="input h-9 flex-1 text-xs">
-                  {tables.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.label}
-                    </option>
+          <div className="min-w-0">
+            {/* Barra de control única (móvil y desktop) */}
+            <div className="sticky top-14 z-30 -mx-3 mb-3 border-b border-ink-800/80 bg-ink-950/95 px-3 py-2 backdrop-blur-md md:mx-0 md:px-0 md:py-2.5">
+              {/* Tipo + mesa/cliente */}
+              <div className="mb-2 flex gap-2">
+                <div className="grid shrink-0 grid-cols-2 gap-1 rounded-xl border border-ink-800 bg-ink-900/60 p-0.5">
+                  {(
+                    [
+                      { type: 'mesa', label: 'Mesa', Icon: TableIcon },
+                      { type: 'delivery', label: 'Delivery', Icon: BikeIcon },
+                    ] as const
+                  ).map(({ type, label, Icon }) => (
+                    <button
+                      key={type}
+                      onClick={() => setOrderType(type)}
+                      className={`flex h-9 items-center justify-center gap-1.5 rounded-lg px-3 text-xs font-medium transition active:scale-[0.98] ${
+                        orderType === type
+                          ? 'bg-ember-500 text-ink-950'
+                          : 'text-cream-300 hover:text-cream-100'
+                      }`}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {label}
+                    </button>
                   ))}
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="Nombre"
-                  className="input h-9 flex-1 text-xs"
-                />
-              )}
-            </div>
+                </div>
+                {orderType === 'mesa' ? (
+                  <select
+                    value={tableId}
+                    onChange={(e) => setTableId(e.target.value)}
+                    className="input h-9 min-w-0 flex-1 text-xs"
+                  >
+                    {tables.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Nombre"
+                    className="input h-9 min-w-0 flex-1 text-xs"
+                  />
+                )}
+              </div>
 
-            {/* Búsqueda + chips */}
-            <div className="sticky top-14 z-30 -mx-3 mb-2 border-b border-ink-800/80 bg-ink-950/95 px-3 py-1.5 backdrop-blur-md md:hidden">
-              <div className="relative mb-1">
+              {/* Búsqueda */}
+              <div className="relative mb-2">
                 <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-cream-500" />
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Buscar…"
-                  className="input h-8 pl-8 text-xs"
+                  placeholder="Buscar platillo…"
+                  className="input h-9 pl-8 pr-8 text-xs"
                 />
                 {query && (
                   <button
@@ -234,6 +243,8 @@ export default function NewOrderPage() {
                   </button>
                 )}
               </div>
+
+              {/* Categorías */}
               <div className="flex gap-1.5 overflow-x-auto pb-0.5">
                 {itemsByCategory.map(({ category }) => (
                   <button
@@ -251,29 +262,14 @@ export default function NewOrderPage() {
               </div>
             </div>
 
-            {/* Búsqueda desktop */}
-            <div className="relative mb-3 hidden md:block">
-              <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-cream-500" />
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Buscar platillo…"
-                className="input pl-10"
-              />
-              {query && (
-                <button
-                  onClick={() => setQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-cream-500 transition hover:text-cream-200"
-                  aria-label="Limpiar búsqueda"
-                >
-                  <CloseIcon className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-
             {/* Menú */}
-            {itemsByCategory.length === 0 ? (
+            {loading ? (
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-2">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="skeleton h-16 rounded-lg" />
+                ))}
+              </div>
+            ) : itemsByCategory.length === 0 ? (
               <div className="empty-state">
                 <span className="flex h-12 w-12 items-center justify-center rounded-full border border-ink-700 bg-ink-800 text-cream-500">
                   <SearchIcon className="h-6 w-6" />
@@ -292,15 +288,14 @@ export default function NewOrderPage() {
             ) : (
               <div className="space-y-4">
                 {itemsByCategory.map(({ category, items: catItems }) => (
-                  <section key={category.id} id={`cat-${category.id}`} className="scroll-mt-24">
+                  <section key={category.id} id={`cat-${category.id}`} className="scroll-mt-48">
                     <div className="mb-2 flex items-center gap-3">
                       <span className="h-px w-6 bg-ember-500/60" />
                       <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-cream-400">
                         {category.name}
                       </h2>
+                      <span className="text-xs tabular-nums text-cream-500">{catItems.length}</span>
                     </div>
-                    {/* auto-fill: columnas de ~170-200px sin importar el ancho del
-                        viewport (evita que 1 tarjeta ocupe toda la pantalla en PWA) */}
                     <ul className="grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-2">
                       {catItems.map((item) => {
                         const qty = cart.find((c) => c.item.id === item.id)?.quantity ?? 0
@@ -316,7 +311,7 @@ export default function NewOrderPage() {
                                     {item.name}
                                   </span>
                                   <span className="mt-0.5 block font-mono text-[11px] tabular-nums text-cream-500 transition group-hover:text-ember-400">
-                                    S/{Number(item.price).toFixed(2)}
+                                    {soles(Number(item.price))}
                                   </span>
                                 </span>
                                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-ink-700 bg-ink-800 text-ember-400 transition group-hover:border-ember-500 group-hover:bg-ember-500 group-hover:text-ink-950">
@@ -334,7 +329,7 @@ export default function NewOrderPage() {
                                   {item.name}
                                 </span>
                                 <span className="mt-0.5 block font-mono text-[11px] tabular-nums text-ember-400">
-                                  S/{Number(item.price).toFixed(2)}
+                                  {soles(Number(item.price))}
                                 </span>
                               </span>
                               <div className="flex shrink-0 items-center gap-1">
@@ -369,28 +364,29 @@ export default function NewOrderPage() {
 
           {/* Carrito (desktop) */}
           <aside className="hidden lg:block">
-            <div className="card sticky top-20 overflow-hidden">
+            <div className="card sticky top-20 flex max-h-[calc(100vh-6rem)] flex-col overflow-hidden">
               <div className="flex items-center justify-between border-b border-ink-800 px-5 py-4">
                 <h2 className="font-display text-lg font-semibold tracking-tight text-cream-50">
                   Pedido
                 </h2>
                 <span className="badge-amber">{cart.length}</span>
               </div>
-              <div className="p-5">
-                <CartPanel
-                  cart={cart}
-                  onAdd={addToCart}
-                  onRemove={removeFromCart}
-                  note={note}
-                  onNoteChange={setNote}
-                  error={error}
-                  loading={loading}
-                  onSubmit={handleSubmit}
-                  total={total}
-                  subtotal={subtotal}
-                  orderType={orderType}
-                  deliveryFee={deliveryFee}
-                />
+              <div className="min-h-0 flex-1 overflow-y-auto p-5">
+                <CartItems cart={cart} onAdd={addToCart} onRemove={removeFromCart} />
+                <div className="mt-4">
+                  <CartFooter
+                    subtotal={subtotal}
+                    total={total}
+                    orderType={orderType}
+                    deliveryFee={deliveryFee}
+                    note={note}
+                    onNoteChange={setNote}
+                    error={error}
+                    loading={loading}
+                    disabled={loading || cart.length === 0}
+                    onSubmit={handleSubmit}
+                  />
+                </div>
               </div>
             </div>
           </aside>
@@ -409,44 +405,44 @@ export default function NewOrderPage() {
           <span className="text-sm font-semibold">
             Ver pedido · {cart.length} {cart.length === 1 ? 'plato' : 'platos'}
           </span>
-          <span className="font-display text-lg font-semibold tabular-nums">S/{total.toFixed(2)}</span>
+          <span className="font-display text-lg font-semibold tabular-nums">{soles(total)}</span>
         </button>
       </div>
 
-      {/* Sheet móvil del pedido */}
+      {/* Sheet móvil del pedido (pie fijo con total y enviar) */}
       {showSheet && (
         <div className="fixed inset-0 z-[60] lg:hidden" role="dialog" aria-modal="true">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowSheet(false)} />
-          <div
-            className="absolute inset-x-0 bottom-0 max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-ink-800 bg-ink-900"
-            style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-          >
-            <div className="sticky top-0 flex items-center justify-between border-b border-ink-800 bg-ink-900 px-4 py-3">
+          <div className="absolute inset-x-0 bottom-0 flex max-h-[85vh] flex-col rounded-t-2xl border-t border-ink-800 bg-ink-900">
+            <div className="flex items-center justify-between gap-2 border-b border-ink-800 px-4 py-3">
               <h2 className="font-display text-lg font-semibold tracking-tight text-cream-50">
                 Pedido
               </h2>
-              <button
-                onClick={() => setShowSheet(false)}
-                className="btn-icon"
-                aria-label="Cerrar"
-              >
+              <span className="badge-amber">{cart.length}</span>
+              <button onClick={() => setShowSheet(false)} className="btn-icon" aria-label="Cerrar">
                 <CloseIcon className="h-5 w-5" />
               </button>
             </div>
-            <div className="p-4">
-              <CartPanel
-                cart={cart}
-                onAdd={addToCart}
-                onRemove={removeFromCart}
+
+            <div className="min-h-0 flex-1 overflow-y-auto p-4">
+              <CartItems cart={cart} onAdd={addToCart} onRemove={removeFromCart} />
+            </div>
+
+            <div
+              className="border-t border-ink-800 bg-ink-900 p-4"
+              style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+            >
+              <CartFooter
+                subtotal={subtotal}
+                total={total}
+                orderType={orderType}
+                deliveryFee={deliveryFee}
                 note={note}
                 onNoteChange={setNote}
                 error={error}
                 loading={loading}
+                disabled={loading || cart.length === 0}
                 onSubmit={handleSubmit}
-                total={total}
-                subtotal={subtotal}
-                orderType={orderType}
-                deliveryFee={deliveryFee}
               />
             </div>
           </div>
