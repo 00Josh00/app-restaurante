@@ -16,7 +16,8 @@ export default function AppBottomNav({ role }: { role: string }) {
     >
       <div className="mx-auto flex max-w-md items-stretch justify-around">
         {links.map(({ href, label, Icon }) => {
-          const active = pathname.startsWith(href)
+          // Comparación exacta: en /orders/new no debe marcarse /orders
+          const active = pathname === href
           return (
             <Link
               key={href}

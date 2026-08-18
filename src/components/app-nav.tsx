@@ -72,7 +72,8 @@ export default function AppNav({
 
         <nav className="hidden items-center gap-1 md:flex">
           {visibleLinks.map(({ href, label, Icon }) => {
-            const active = pathname.startsWith(href)
+            // Comparación exacta: en /orders/new no debe marcarse /orders
+            const active = pathname === href
             return (
               <Link
                 key={href}

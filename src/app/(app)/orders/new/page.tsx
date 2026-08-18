@@ -299,7 +299,9 @@ export default function NewOrderPage() {
                         {category.name}
                       </h2>
                     </div>
-                    <ul className="grid grid-cols-2 gap-2 xl:grid-cols-3">
+                    {/* auto-fill: columnas de ~170-200px sin importar el ancho del
+                        viewport (evita que 1 tarjeta ocupe toda la pantalla en PWA) */}
+                    <ul className="grid grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-2">
                       {catItems.map((item) => {
                         const qty = cart.find((c) => c.item.id === item.id)?.quantity ?? 0
                         if (qty === 0) {
