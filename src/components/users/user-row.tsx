@@ -4,18 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Modal from '@/components/ui/modal'
 import { TrashIcon } from '@/components/ui/icons'
-
-const ROLES = [
-  { value: 'waiter', label: 'Mesero' },
-  { value: 'cook', label: 'Cocinero' },
-  { value: 'admin', label: 'Admin' },
-]
-
-const ROLE_BADGE: Record<string, string> = {
-  waiter: 'badge-neutral',
-  cook: 'badge-amber',
-  admin: 'badge-emerald',
-}
+import { ROLE_BADGE, ROLE_LABELS, ROLE_OPTIONS } from '@/lib/roles'
 
 type User = {
   id: string
@@ -85,7 +74,7 @@ export default function UserRow({
       </div>
 
       <span className={`hidden sm:inline-flex ${ROLE_BADGE[user.role] ?? 'badge-neutral'}`}>
-        {ROLES.find((r) => r.value === user.role)?.label ?? user.role}
+        {ROLE_LABELS[user.role] ?? user.role}
       </span>
 
       <select
@@ -95,7 +84,7 @@ export default function UserRow({
         className="rounded-lg border border-ink-700 bg-ink-950 px-2.5 py-1.5 text-sm text-cream-200 outline-none transition focus:border-ember-500 disabled:opacity-50"
         aria-label={`Rol de ${user.email}`}
       >
-        {ROLES.map((r) => (
+        {ROLE_OPTIONS.map((r) => (
           <option key={r.value} value={r.value}>
             {r.label}
           </option>

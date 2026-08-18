@@ -1,8 +1,10 @@
-import { spawnSync } from "node:child_process";
 import { createSerwistRoute } from "@serwist/turbopack";
 
+// Revision estable por build: usa el SHA del deploy (Vercel) o un UUID
+// generado una vez por proceso (evita spawn de git en cada carga).
 const revision =
-  spawnSync("git", ["rev-parse", "HEAD"], { encoding: "utf-8" }).stdout ??
+  process.env.VERCEL_GIT_COMMIT_SHA ??
+  process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ??
   crypto.randomUUID();
 
 export const { dynamic, dynamicParams, revalidate, generateStaticParams, GET } =

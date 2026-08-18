@@ -3,12 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Modal from '@/components/ui/modal'
-
-const ROLES = [
-  { value: 'waiter', label: 'Mesero' },
-  { value: 'cook', label: 'Cocinero' },
-  { value: 'admin', label: 'Admin' },
-]
+import { ROLE_OPTIONS } from '@/lib/roles'
 
 export default function UserForm() {
   const [open, setOpen] = useState(false)
@@ -111,7 +106,7 @@ export default function UserForm() {
               onChange={(e) => setRole(e.target.value)}
               className="input"
             >
-              {ROLES.map((r) => (
+              {ROLE_OPTIONS.map((r) => (
                 <option key={r.value} value={r.value}>
                   {r.label}
                 </option>

@@ -64,7 +64,11 @@ export async function POST(req: Request) {
     .update({ role, full_name: full_name || null })
     .eq('id', created.user.id)
 
-  if (roleError) return badRequest(roleError.message)
+  if (roleError) {
+    // Rollback: no dejar un usuario huérfano con rol por defecto
+    await admin.auth.admin.deleteUser(created.user.id).catch(() => {})
+    return badRequest(roleError.message)
+  }
 
   return NextResponse.json({ ok: true, id: created.user.id })
 }

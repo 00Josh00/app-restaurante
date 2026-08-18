@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import type { CartItem, MenuItem } from '@/lib/order-types'
 import {
   BikeIcon,
   CloseIcon,
@@ -15,16 +16,7 @@ import {
 import CartPanel from '@/components/orders/cart-panel'
 
 type Category = { id: string; name: string }
-export type MenuItem = {
-  id: string
-  category_id: string | null
-  name: string
-  price: number
-  available: boolean
-}
 type Table = { id: string; label: string }
-
-type CartItem = { item: MenuItem; quantity: number }
 
 export default function NewOrderPage() {
   const router = useRouter()
@@ -43,9 +35,24 @@ export default function NewOrderPage() {
   const [showSheet, setShowSheet] = useState(false)
   const [query, setQuery] = useState('')
   const [deliveryFee, setDeliveryFee] = useState<number | null>(null)
+  const [role, setRole] = useState<string | null>(null)
 
   useEffect(() => {
     const supabase = createClient()
+
+    // Solo mesero o admin toma pedidos
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      setRole(profile?.role ?? null)
+      if (profile?.role !== 'waiter' && profile?.role !== 'admin') {
+        router.replace('/dashboard')
+      }
+    })
 
     Promise.all([
       supabase.from('categories').select('id, name').order('sort_order', { ascending: true }),
@@ -63,7 +70,7 @@ export default function NewOrderPage() {
       if (fee.data != null) setDeliveryFee(Number(fee.data))
       if (tabs.data?.[0]) setTableId(tabs.data[0].id)
     })
-  }, [])
+  }, [router])
 
   const itemsByCategory = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -142,6 +149,11 @@ export default function NewOrderPage() {
 
     router.push('/orders')
     router.refresh()
+  }
+
+  // Mientras se valida el rol (o ya se redirige), no se pinta nada
+  if (role !== null && role !== 'waiter' && role !== 'admin') {
+    return null
   }
 
   return (

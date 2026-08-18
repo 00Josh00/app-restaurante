@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { ROLE_LABELS } from '@/lib/roles'
 import {
   BookIcon,
   ChartIcon,
@@ -13,12 +14,6 @@ import {
   LogoutIcon,
   UtensilsIcon,
 } from '@/components/ui/icons'
-
-const ROLE_LABELS: Record<string, string> = {
-  admin: 'Admin',
-  waiter: 'Mesero',
-  cook: 'Cocinero',
-}
 
 const NAV_LINKS = [
   { href: '/orders/new', label: 'Nuevo pedido', roles: ['waiter', 'admin'], Icon: ClipboardIcon },

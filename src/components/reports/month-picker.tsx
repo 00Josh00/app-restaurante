@@ -8,12 +8,23 @@ export default function MonthPicker({ value }: { value: string }) {
   const router = useRouter()
 
   const months = useMemo(() => {
+    // Mes base en horario de Lima (consistente con el resto de la app)
+    const [year, month] = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'America/Lima',
+      year: 'numeric',
+      month: '2-digit',
+    })
+      .format(new Date())
+      .split('-')
+      .map(Number)
+
     const list: { ym: string; label: string }[] = []
-    const now = new Date()
     for (let i = 0; i < 24; i++) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-      const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-      const label = d
+      const total = year * 12 + (month - 1) - i
+      const y = Math.floor(total / 12)
+      const m = (total % 12) + 1
+      const ym = `${y}-${String(m).padStart(2, '0')}`
+      const label = new Date(y, m - 1, 1)
         .toLocaleDateString('es-PE', { month: 'long', year: 'numeric' })
         .replace(' de ', ' ')
       list.push({ ym, label: label.charAt(0).toUpperCase() + label.slice(1) })

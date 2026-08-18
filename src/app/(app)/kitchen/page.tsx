@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { STATUS_ACCENT, STATUS_BADGE, STATUS_LABELS, type OrderStatus } from '@/lib/order-status'
@@ -52,10 +53,13 @@ function Elapsed({ from }: { from: string }) {
 }
 
 export default function KitchenPage() {
+  const router = useRouter()
   const [orders, setOrders] = useState<Order[]>([])
   const [tables, setTables] = useState<TableMap>({})
   const [loading, setLoading] = useState(true)
   const [newOrderIds, setNewOrderIds] = useState<string[]>([])
+  const [role, setRole] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
   const channelRef = useRef<RealtimeChannel | null>(null)
 
   const fetchOrderWithItems = async (id: string) => {
@@ -70,6 +74,20 @@ export default function KitchenPage() {
 
   useEffect(() => {
     const supabase = createClient()
+
+    // Solo cocinero o admin accede a la cocina
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      setRole(profile?.role ?? null)
+      if (profile?.role !== 'cook' && profile?.role !== 'admin') {
+        router.replace('/dashboard')
+      }
+    })
 
     Promise.all([
       supabase.from('tables').select('id, label'),
@@ -138,12 +156,15 @@ export default function KitchenPage() {
     return () => {
       channelRef.current?.unsubscribe()
     }
-  }, [])
+  }, [router])
 
   const updateStatus = async (id: string, status: OrderStatus) => {
     const supabase = createClient()
     const { error } = await supabase.from('orders').update({ status }).eq('id', id)
-    if (error) console.error(error)
+    if (error) {
+      setActionError(error.message)
+      console.error(error)
+    }
   }
 
   const orderLabel = (order: Order) => {
@@ -152,6 +173,11 @@ export default function KitchenPage() {
   }
 
   const pendingCount = orders.filter((o) => o.status === 'pendiente').length
+
+  // Mientras se valida el rol (o ya se redirige), no se pinta nada
+  if (role !== null && role !== 'cook' && role !== 'admin') {
+    return null
+  }
 
   return (
     <div>
@@ -177,6 +203,8 @@ export default function KitchenPage() {
           </span>
         </div>
       </div>
+
+      {actionError && <p className="alert-error mb-4">{actionError}</p>}
 
       {loading ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

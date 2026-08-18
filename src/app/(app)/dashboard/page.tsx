@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { ROLE_LABELS } from '@/lib/roles'
 import {
   BookIcon,
   ChartIcon,
@@ -10,12 +11,6 @@ import {
 } from '@/components/ui/icons'
 
 export const dynamic = 'force-dynamic'
-
-const ROLE_LABELS: Record<string, string> = {
-  admin: 'Admin',
-  waiter: 'Mesero',
-  cook: 'Cocinero',
-}
 
 export default async function DashboardPage() {
   const supabase = await createClient()

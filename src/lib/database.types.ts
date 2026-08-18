@@ -301,7 +301,6 @@ export type Database = {
         }
         Returns: Json
       }
-      get_reports: { Args: never; Returns: Json }
       get_reports_month: {
         Args: { p_month: string }
         Returns: Json

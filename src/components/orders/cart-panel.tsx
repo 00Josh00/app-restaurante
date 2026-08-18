@@ -1,9 +1,7 @@
 'use client'
 
 import { MinusIcon, PlusIcon } from '@/components/ui/icons'
-import type { MenuItem } from '@/app/(app)/orders/new/page'
-
-type CartItem = { item: MenuItem; quantity: number }
+import type { CartItem, MenuItem } from '@/lib/order-types'
 
 export default function CartPanel({
   cart,
