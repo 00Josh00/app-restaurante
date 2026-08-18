@@ -73,8 +73,10 @@ Si necesitas un estilo que no existe, añádelo como clase en globals.css (en
   botones de avance de estado. Nuevas órdenes hacen pulso `ring-ember` + beep.
 - **Reportes:** cards de resumen (monto grande en `font-display` ember),
   barras por semana, desglose por tipo y top platillos.
-- **Menú:** categorías con sección, grid de platillos, controles admin
-  (`ItemForm`, `DeleteButton`) discretos a la derecha.
+- **Menú:** categorías con sección (header con línea ámbar + contador),
+  tarjetas de platillo con la misma grilla auto-fill de 170px, estado
+  Disponible/Agotado y controles admin discretos (editar/eliminar + toggle
+  rápido de disponibilidad `AvailableToggle`).
 - **Usuarios:** filas con avatar de iniciales, email, select de rol y botón de
   borrar; botón "Nuevo usuario" abre `.modal`.
 
